@@ -1,0 +1,253 @@
+name: AIFred Trading Autopilot
+
+on:
+  schedule:
+    # Run every 12 hours at 00:00 and 12:00 UTC
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Trading mode (paper/live)'
+        required: false
+        default: 'paper'
+      run_optimizer:
+        description: 'Run parameter optimizer'
+        required: false
+        default: 'false'
+        type: boolean
+      max_experiments:
+        description: 'Max optimizer experiments'
+        required: false
+        default: '50'
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  # ─── Trading Scan ────────────────────────────────────────
+  trading-scan:
+    name: Trading Scan & Execute
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore trading database
+        uses: actions/cache@v4
+        with:
+          path: data/trading.db
+          key: trading-db-${{ github.sha }}
+          restore-keys: |
+            trading-db-
+
+      - name: Initialize database if missing
+        run: |
+          if [ ! -f data/trading.db ]; then
+            python seed_demo_data.py
+          fi
+
+      - name: Export dashboard data
+        run: python scripts/export_trading_data.py
+
+      - name: Run trading scan
+        env:
+          BINANCE_API_KEY: ${{ secrets.BINANCE_API_KEY }}
+          BINANCE_API_SECRET: ${{ secrets.BINANCE_API_SECRET }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_API_SECRET: ${{ secrets.ALPACA_API_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python -m src.main \
+            --mode ${{ github.event.inputs.mode || 'paper' }} \
+            --scan-interval 0 \
+            --single-scan
+
+      - name: Export dashboard data after scan
+        run: python scripts/export_trading_data.py
+
+      - name: Upload trading database
+        uses: actions/upload-artifact@v4
+        with:
+          name: trading-db-${{ github.run_number }}
+          path: |
+            data/trading.db
+            data/trading-data.json
+          retention-days: 30
+
+      - name: Cache trading database
+        uses: actions/cache/save@v4
+        with:
+          path: data/trading.db
+          key: trading-db-${{ github.sha }}-${{ github.run_number }}
+
+  # ─── Parameter Optimizer (on-demand) ─────────────────────
+  optimize:
+    name: Parameter Optimization
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: github.event.inputs.run_optimizer == 'true'
+    needs: trading-scan
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download trading database
+        uses: actions/download-artifact@v4
+        with:
+          name: trading-db-${{ github.run_number }}
+          path: data/
+
+      - name: Run optimizer
+        run: |
+          python -c "
+          from src.optimizer.autoresearch import run_optimizer
+          result = run_optimizer(
+              max_experiments=${{ github.event.inputs.max_experiments || '50' }},
+              strategy='bayesian'
+          )
+          print(f'Best win rate: {result[\"best_win_rate\"]:.2f}%')
+          print(f'Kept: {result[\"kept\"]}, Discarded: {result[\"discarded\"]}')
+          "
+
+      - name: Upload optimizer results
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimizer-results-${{ github.run_number }}
+          path: data/optimizer/
+          retention-days: 90
+
+  # ─── Generate Report ─────────────────────────────────────
+  report:
+    name: Generate Performance Report
+    runs-on: ubuntu-latest
+    needs: trading-scan
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download trading database
+        uses: actions/download-artifact@v4
+        with:
+          name: trading-db-${{ github.run_number }}
+          path: data/
+
+      - name: Generate report
+        id: report
+        run: |
+          python -c "
+          import sqlite3, json
+          conn = sqlite3.connect('data/trading.db')
+          conn.row_factory = sqlite3.Row
+
+          closed = conn.execute('SELECT * FROM trades WHERE pnl IS NOT NULL').fetchall()
+          total_pnl = sum(r['pnl'] for r in closed)
+          wins = sum(1 for r in closed if r['pnl'] > 0)
+          win_rate = wins / len(closed) * 100 if closed else 0
+          open_count = conn.execute('SELECT COUNT(*) FROM trades WHERE pnl IS NULL').fetchone()[0]
+
+          print(f'## AIFred Trading Report')
+          print(f'- **Total P&L**: \${total_pnl:,.2f}')
+          print(f'- **Win Rate**: {win_rate:.1f}%')
+          print(f'- **Closed Trades**: {len(closed)}')
+          print(f'- **Open Positions**: {open_count}')
+          print(f'- **Winning**: {wins} | **Losing**: {len(closed) - wins}')
+          conn.close()
+          " >> $GITHUB_STEP_SUMMARY
+
+      - name: Send Telegram notification
+        if: env.TELEGRAM_BOT_TOKEN != ''
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -c "
+          import sqlite3, requests, os
+          conn = sqlite3.connect('data/trading.db')
+          conn.row_factory = sqlite3.Row
+          closed = conn.execute('SELECT * FROM trades WHERE pnl IS NOT NULL').fetchall()
+          total_pnl = sum(r['pnl'] for r in closed)
+          wins = sum(1 for r in closed if r['pnl'] > 0)
+          wr = wins / len(closed) * 100 if closed else 0
+          conn.close()
+
+          msg = f'🤖 AIFred Scan Complete\n💰 P&L: \${total_pnl:,.2f}\n🎯 WR: {wr:.1f}%\n📊 Trades: {len(closed)}'
+          token = os.environ['TELEGRAM_BOT_TOKEN']
+          chat = os.environ['TELEGRAM_CHAT_ID']
+          requests.post(f'https://api.telegram.org/bot{token}/sendMessage',
+                       json={'chat_id': chat, 'text': msg})
+          " || echo "Telegram notification skipped"
+
+  # ─── Deploy Dashboard ────────────────────────────────────
+  deploy-dashboard:
+    name: Deploy Dashboard
+    runs-on: ubuntu-latest
+    needs: trading-scan
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Download trading database
+        uses: actions/download-artifact@v4
+        with:
+          name: trading-db-${{ github.run_number }}
+          path: data/
+
+      - name: Build Next.js
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Deploy to Vercel
+        if: env.VERCEL_TOKEN != ''
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: npx vercel --prod --token=$VERCEL_TOKEN

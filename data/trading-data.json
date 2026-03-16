@@ -1,0 +1,2540 @@
+{
+  "summary": {
+    "totalPnl": 54602.76,
+    "winRate": 78.1,
+    "totalTrades": 242,
+    "openPositions": 8,
+    "sharpeRatio": 7.31,
+    "maxDrawdown": 0.59,
+    "profitFactor": 10.26,
+    "avgWin": 320.09,
+    "avgLoss": 111.22,
+    "totalFees": 2009.58,
+    "currentEquity": 154602.76
+  },
+  "equityCurve": [
+    {
+      "date": "Start",
+      "value": 100000
+    },
+    {
+      "date": "2026-02-14",
+      "value": 100183.69
+    },
+    {
+      "date": "2026-02-14",
+      "value": 100178.59
+    },
+    {
+      "date": "2026-02-14",
+      "value": 100545.06
+    },
+    {
+      "date": "2026-02-14",
+      "value": 100552.42
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101651.21
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101691.57
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101554.68
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101598.27
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101751.95
+    },
+    {
+      "date": "2026-02-15",
+      "value": 101843.4
+    },
+    {
+      "date": "2026-02-15",
+      "value": 102006.91
+    },
+    {
+      "date": "2026-02-15",
+      "value": 102022.0
+    },
+    {
+      "date": "2026-02-15",
+      "value": 102047.85
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102277.83
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102280.34
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102297.68
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102362.72
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102530.64
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102873.15
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102895.54
+    },
+    {
+      "date": "2026-02-16",
+      "value": 102975.8
+    },
+    {
+      "date": "2026-02-17",
+      "value": 103404.58
+    },
+    {
+      "date": "2026-02-17",
+      "value": 103468.54
+    },
+    {
+      "date": "2026-02-17",
+      "value": 103500.16
+    },
+    {
+      "date": "2026-02-17",
+      "value": 103541.09
+    },
+    {
+      "date": "2026-02-17",
+      "value": 103512.43
+    },
+    {
+      "date": "2026-02-18",
+      "value": 103638.87
+    },
+    {
+      "date": "2026-02-18",
+      "value": 103536.14
+    },
+    {
+      "date": "2026-02-18",
+      "value": 104459.14
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106339.41
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106348.7
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106508.39
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106716.09
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106774.91
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106368.93
+    },
+    {
+      "date": "2026-02-18",
+      "value": 106547.49
+    },
+    {
+      "date": "2026-02-19",
+      "value": 106850.78
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107095.32
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107133.67
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107548.76
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107660.52
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107804.11
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107866.44
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107916.73
+    },
+    {
+      "date": "2026-02-19",
+      "value": 108025.04
+    },
+    {
+      "date": "2026-02-19",
+      "value": 108020.3
+    },
+    {
+      "date": "2026-02-19",
+      "value": 107451.32
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107492.58
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107490.12
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107529.08
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107617.25
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107602.53
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107452.87
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107449.72
+    },
+    {
+      "date": "2026-02-20",
+      "value": 107613.36
+    },
+    {
+      "date": "2026-02-20",
+      "value": 108192.52
+    },
+    {
+      "date": "2026-02-20",
+      "value": 108142.37
+    },
+    {
+      "date": "2026-02-20",
+      "value": 108073.79
+    },
+    {
+      "date": "2026-02-20",
+      "value": 108311.07
+    },
+    {
+      "date": "2026-02-21",
+      "value": 108529.58
+    },
+    {
+      "date": "2026-02-21",
+      "value": 110812.76
+    },
+    {
+      "date": "2026-02-21",
+      "value": 110847.54
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113033.19
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113751.49
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113886.94
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113466.36
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113573.77
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113609.67
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113999.07
+    },
+    {
+      "date": "2026-02-21",
+      "value": 113986.17
+    },
+    {
+      "date": "2026-02-21",
+      "value": 114661.24
+    },
+    {
+      "date": "2026-02-21",
+      "value": 115855.87
+    },
+    {
+      "date": "2026-02-22",
+      "value": 115992.8
+    },
+    {
+      "date": "2026-02-22",
+      "value": 116040.78
+    },
+    {
+      "date": "2026-02-22",
+      "value": 116058.98
+    },
+    {
+      "date": "2026-02-22",
+      "value": 117602.98
+    },
+    {
+      "date": "2026-02-22",
+      "value": 117272.16
+    },
+    {
+      "date": "2026-02-22",
+      "value": 117325.87
+    },
+    {
+      "date": "2026-02-22",
+      "value": 118053.14
+    },
+    {
+      "date": "2026-02-23",
+      "value": 117995.19
+    },
+    {
+      "date": "2026-02-23",
+      "value": 118076.24
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119376.76
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119453.41
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119518.6
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119668.09
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119746.61
+    },
+    {
+      "date": "2026-02-23",
+      "value": 119797.13
+    },
+    {
+      "date": "2026-02-24",
+      "value": 120968.69
+    },
+    {
+      "date": "2026-02-24",
+      "value": 121481.05
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123394.46
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123527.0
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123540.55
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123632.36
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123674.66
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123922.27
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123954.4
+    },
+    {
+      "date": "2026-02-24",
+      "value": 123942.9
+    },
+    {
+      "date": "2026-02-24",
+      "value": 124840.65
+    },
+    {
+      "date": "2026-02-25",
+      "value": 124892.5
+    },
+    {
+      "date": "2026-02-25",
+      "value": 124874.64
+    },
+    {
+      "date": "2026-02-25",
+      "value": 124975.88
+    },
+    {
+      "date": "2026-02-25",
+      "value": 124973.68
+    },
+    {
+      "date": "2026-02-25",
+      "value": 124962.93
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126677.6
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126776.66
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126720.67
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126455.84
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126582.29
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126614.39
+    },
+    {
+      "date": "2026-02-25",
+      "value": 126713.3
+    },
+    {
+      "date": "2026-02-26",
+      "value": 126739.66
+    },
+    {
+      "date": "2026-02-26",
+      "value": 128039.01
+    },
+    {
+      "date": "2026-02-26",
+      "value": 128082.91
+    },
+    {
+      "date": "2026-02-26",
+      "value": 128316.56
+    },
+    {
+      "date": "2026-02-26",
+      "value": 128241.92
+    },
+    {
+      "date": "2026-02-27",
+      "value": 128257.0
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129080.23
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129367.26
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129567.89
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129221.83
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129315.67
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129301.23
+    },
+    {
+      "date": "2026-02-27",
+      "value": 129369.29
+    },
+    {
+      "date": "2026-02-28",
+      "value": 129892.75
+    },
+    {
+      "date": "2026-02-28",
+      "value": 129947.39
+    },
+    {
+      "date": "2026-02-28",
+      "value": 130068.25
+    },
+    {
+      "date": "2026-02-28",
+      "value": 130140.29
+    },
+    {
+      "date": "2026-03-01",
+      "value": 130122.92
+    },
+    {
+      "date": "2026-03-01",
+      "value": 130168.78
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130322.33
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130333.55
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130346.49
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130378.38
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130351.18
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130412.9
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130457.78
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130507.76
+    },
+    {
+      "date": "2026-03-02",
+      "value": 130562.97
+    },
+    {
+      "date": "2026-03-02",
+      "value": 131168.46
+    },
+    {
+      "date": "2026-03-02",
+      "value": 131224.58
+    },
+    {
+      "date": "2026-03-02",
+      "value": 131208.25
+    },
+    {
+      "date": "2026-03-03",
+      "value": 131270.43
+    },
+    {
+      "date": "2026-03-03",
+      "value": 131427.13
+    },
+    {
+      "date": "2026-03-03",
+      "value": 131626.89
+    },
+    {
+      "date": "2026-03-03",
+      "value": 131577.36
+    },
+    {
+      "date": "2026-03-03",
+      "value": 131694.31
+    },
+    {
+      "date": "2026-03-03",
+      "value": 132235.81
+    },
+    {
+      "date": "2026-03-03",
+      "value": 132284.34
+    },
+    {
+      "date": "2026-03-03",
+      "value": 132309.95
+    },
+    {
+      "date": "2026-03-04",
+      "value": 132403.51
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134447.07
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134470.91
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134482.82
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134457.74
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134437.98
+    },
+    {
+      "date": "2026-03-04",
+      "value": 134424.25
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134503.04
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134459.88
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134487.04
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134621.23
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134474.78
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134591.86
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134618.86
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134612.15
+    },
+    {
+      "date": "2026-03-05",
+      "value": 134542.61
+    },
+    {
+      "date": "2026-03-06",
+      "value": 134586.62
+    },
+    {
+      "date": "2026-03-06",
+      "value": 135023.37
+    },
+    {
+      "date": "2026-03-06",
+      "value": 136803.42
+    },
+    {
+      "date": "2026-03-06",
+      "value": 136837.78
+    },
+    {
+      "date": "2026-03-06",
+      "value": 136797.31
+    },
+    {
+      "date": "2026-03-06",
+      "value": 138973.35
+    },
+    {
+      "date": "2026-03-06",
+      "value": 138907.48
+    },
+    {
+      "date": "2026-03-07",
+      "value": 139018.08
+    },
+    {
+      "date": "2026-03-07",
+      "value": 140404.83
+    },
+    {
+      "date": "2026-03-07",
+      "value": 140571.97
+    },
+    {
+      "date": "2026-03-07",
+      "value": 139837.22
+    },
+    {
+      "date": "2026-03-07",
+      "value": 139746.03
+    },
+    {
+      "date": "2026-03-07",
+      "value": 139854.28
+    },
+    {
+      "date": "2026-03-07",
+      "value": 140015.41
+    },
+    {
+      "date": "2026-03-08",
+      "value": 140022.45
+    },
+    {
+      "date": "2026-03-08",
+      "value": 140998.16
+    },
+    {
+      "date": "2026-03-08",
+      "value": 140874.59
+    },
+    {
+      "date": "2026-03-08",
+      "value": 141185.47
+    },
+    {
+      "date": "2026-03-08",
+      "value": 141512.41
+    },
+    {
+      "date": "2026-03-09",
+      "value": 142621.05
+    },
+    {
+      "date": "2026-03-09",
+      "value": 142680.11
+    },
+    {
+      "date": "2026-03-09",
+      "value": 142695.74
+    },
+    {
+      "date": "2026-03-09",
+      "value": 142967.77
+    },
+    {
+      "date": "2026-03-09",
+      "value": 143044.47
+    },
+    {
+      "date": "2026-03-09",
+      "value": 143322.36
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143547.08
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143636.02
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143373.67
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143403.15
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143410.7
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143417.87
+    },
+    {
+      "date": "2026-03-10",
+      "value": 143150.85
+    },
+    {
+      "date": "2026-03-11",
+      "value": 143282.37
+    },
+    {
+      "date": "2026-03-11",
+      "value": 143322.4
+    },
+    {
+      "date": "2026-03-11",
+      "value": 143153.15
+    },
+    {
+      "date": "2026-03-11",
+      "value": 143071.2
+    },
+    {
+      "date": "2026-03-11",
+      "value": 143393.83
+    },
+    {
+      "date": "2026-03-12",
+      "value": 143391.94
+    },
+    {
+      "date": "2026-03-12",
+      "value": 143544.23
+    },
+    {
+      "date": "2026-03-12",
+      "value": 143450.35
+    },
+    {
+      "date": "2026-03-12",
+      "value": 144239.12
+    },
+    {
+      "date": "2026-03-12",
+      "value": 144427.79
+    },
+    {
+      "date": "2026-03-12",
+      "value": 144877.13
+    },
+    {
+      "date": "2026-03-12",
+      "value": 144641.1
+    },
+    {
+      "date": "2026-03-12",
+      "value": 145024.9
+    },
+    {
+      "date": "2026-03-12",
+      "value": 145422.88
+    },
+    {
+      "date": "2026-03-13",
+      "value": 145501.12
+    },
+    {
+      "date": "2026-03-13",
+      "value": 145490.47
+    },
+    {
+      "date": "2026-03-13",
+      "value": 145550.12
+    },
+    {
+      "date": "2026-03-13",
+      "value": 145632.81
+    },
+    {
+      "date": "2026-03-13",
+      "value": 146056.59
+    },
+    {
+      "date": "2026-03-13",
+      "value": 146087.68
+    },
+    {
+      "date": "2026-03-13",
+      "value": 146122.62
+    },
+    {
+      "date": "2026-03-13",
+      "value": 146181.45
+    },
+    {
+      "date": "2026-03-13",
+      "value": 147848.58
+    },
+    {
+      "date": "2026-03-14",
+      "value": 148120.95
+    },
+    {
+      "date": "2026-03-14",
+      "value": 148281.77
+    },
+    {
+      "date": "2026-03-14",
+      "value": 148489.18
+    },
+    {
+      "date": "2026-03-14",
+      "value": 148421.42
+    },
+    {
+      "date": "2026-03-15",
+      "value": 148406.19
+    },
+    {
+      "date": "2026-03-15",
+      "value": 149337.65
+    },
+    {
+      "date": "2026-03-15",
+      "value": 149302.04
+    },
+    {
+      "date": "2026-03-15",
+      "value": 149425.66
+    },
+    {
+      "date": "2026-03-15",
+      "value": 149467.97
+    },
+    {
+      "date": "2026-03-15",
+      "value": 149831.29
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152085.46
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152180.86
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152262.74
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152268.37
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152460.7
+    },
+    {
+      "date": "2026-03-16",
+      "value": 152557.0
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154207.12
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154291.99
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154296.51
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154341.72
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154397.56
+    },
+    {
+      "date": "2026-03-16",
+      "value": 154602.76
+    }
+  ],
+  "byAsset": [
+    {
+      "asset": "SPY",
+      "pnl": 2748.27,
+      "trades": 42,
+      "winRate": 78.57
+    },
+    {
+      "asset": "SOL/USDT",
+      "pnl": 3920.87,
+      "trades": 38,
+      "winRate": 71.05
+    },
+    {
+      "asset": "ETH/USDT",
+      "pnl": 4343.51,
+      "trades": 25,
+      "winRate": 80.0
+    },
+    {
+      "asset": "NVDA",
+      "pnl": 1124.04,
+      "trades": 39,
+      "winRate": 82.05
+    },
+    {
+      "asset": "EUR/USD",
+      "pnl": 23983.85,
+      "trades": 33,
+      "winRate": 84.85
+    },
+    {
+      "asset": "AAPL",
+      "pnl": 2619.26,
+      "trades": 35,
+      "winRate": 82.86
+    },
+    {
+      "asset": "BTC/USDT",
+      "pnl": 15862.96,
+      "trades": 30,
+      "winRate": 66.67
+    }
+  ],
+  "byStrategy": [
+    {
+      "strategy": "lstm_ensemble",
+      "pnl": 11224.61,
+      "trades": 54,
+      "winRate": 79.63
+    },
+    {
+      "strategy": "sentiment_breakout",
+      "pnl": 10581.42,
+      "trades": 49,
+      "winRate": 81.63
+    },
+    {
+      "strategy": "transformer",
+      "pnl": 16111.71,
+      "trades": 54,
+      "winRate": 77.78
+    },
+    {
+      "strategy": "mean_reversion",
+      "pnl": 10831.21,
+      "trades": 37,
+      "winRate": 78.38
+    },
+    {
+      "strategy": "ict_confluence",
+      "pnl": 5853.81,
+      "trades": 48,
+      "winRate": 72.92
+    }
+  ],
+  "byTier": [
+    {
+      "tier": "A",
+      "pnl": 25695.85,
+      "trades": 119,
+      "winRate": 78.15
+    },
+    {
+      "tier": "A+",
+      "pnl": 22913.43,
+      "trades": 90,
+      "winRate": 80.0
+    },
+    {
+      "tier": "B",
+      "pnl": 5993.48,
+      "trades": 33,
+      "winRate": 72.73
+    }
+  ],
+  "recentTrades": [
+    {
+      "id": 212,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 3.7591,
+      "entry_price": 600.1342,
+      "fill_price": 600.1779,
+      "exit_price": 574.5151,
+      "stop_loss": 613.3372,
+      "take_profit": 579.1295,
+      "pnl": 96.3,
+      "fees": 1.8,
+      "slippage": 0.044,
+      "confidence": 90.7,
+      "signal_source": "sentiment",
+      "strategy": "lstm_ensemble",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-16T00:15:55.828084+00:00",
+      "exit_time": "2026-03-16T07:54:31.283678+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ML ensemble SHORT: LSTM direction=DOWN (p=93%), CNN detected head & shoulders pattern. Feature importance: RSI_overbought (0.21), volume_decline (0.18). Predicted: -3.1%.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 91% confidence. Closed at 574.52 for +4.3%.",
+      "tier": "A"
+    },
+    {
+      "id": 18,
+      "asset": "SOL/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 34.0009,
+      "entry_price": 209.8276,
+      "fill_price": 209.7009,
+      "exit_price": 203.7926,
+      "stop_loss": 214.4438,
+      "take_profit": 202.4836,
+      "pnl": 205.2,
+      "fees": 5.71,
+      "slippage": 0.02,
+      "confidence": 86.3,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-15T23:09:42.277282+00:00",
+      "exit_time": "2026-03-16T21:12:17.612307+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment short: Claude API analysis='bearish outlook, institutional distribution detected'. FinBERT: -0.37. Reddit panic selling indicators active. Social momentum: -0.81.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 86% confidence. Closed at 203.79 for +2.9%.",
+      "tier": "A+"
+    },
+    {
+      "id": 180,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 3.0255,
+      "entry_price": 594.5717,
+      "fill_price": 594.6399,
+      "exit_price": 576.1144,
+      "stop_loss": 607.6523,
+      "take_profit": 573.7617,
+      "pnl": 55.84,
+      "fees": 1.44,
+      "slippage": 0.018,
+      "confidence": 93.9,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-15T17:55:37.870369+00:00",
+      "exit_time": "2026-03-16T19:05:47.623520+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment collapse: -0.71 (bearish) across 52 sources. Fear & Greed: 17 (extreme fear). Twitter negative engagement velocity +580%. Event: Whale wallet movement (>$50M).",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 576.11 (2.1R). Blended: +3.1%.",
+      "tier": "A"
+    },
+    {
+      "id": 97,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.6656,
+      "entry_price": 3357.115,
+      "fill_price": 3357.0725,
+      "exit_price": 3380.267,
+      "stop_loss": 3283.2585,
+      "take_profit": 3474.6141,
+      "pnl": 84.87,
+      "fees": 9.84,
+      "slippage": 0.022,
+      "confidence": 93.0,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-15T17:50:04.144682+00:00",
+      "exit_time": "2026-03-16T12:32:59.444948+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment-driven entry: FinBERT composite=+0.49, Claude API analysis='strongly bullish, institutional accumulation likely'. Social momentum score: +0.73. Event: ECB rate hold.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 3380.27. Dynamic exit captured 0.7% move.",
+      "tier": "A+"
+    },
+    {
+      "id": 224,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 13.8364,
+      "entry_price": 146.2629,
+      "fill_price": 146.2648,
+      "exit_price": 139.3684,
+      "stop_loss": 149.4807,
+      "take_profit": 141.1437,
+      "pnl": 95.4,
+      "fees": 1.62,
+      "slippage": 0.045,
+      "confidence": 97.9,
+      "signal_source": "ensemble",
+      "strategy": "lstm_ensemble",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-15T15:48:22.457706+00:00",
+      "exit_time": "2026-03-16T02:43:18.292155+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ML ensemble SHORT: LSTM direction=DOWN (p=89%), CNN detected head & shoulders pattern. Feature importance: RSI_overbought (0.21), volume_decline (0.18). Predicted: -4.4%.",
+      "exit_reason": "TRAILING_STOP: Trailed from 146.26 to 149.48 after +6.1% run. Locked in 4.7% profit.",
+      "tier": "A"
+    },
+    {
+      "id": 198,
+      "asset": "ETH/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 2.1018,
+      "entry_price": 3215.1883,
+      "fill_price": 3215.2911,
+      "exit_price": 3193.6792,
+      "stop_loss": 3285.9225,
+      "take_profit": 3102.6567,
+      "pnl": 45.21,
+      "fees": 5.41,
+      "slippage": 0.047,
+      "confidence": 74.3,
+      "signal_source": "sentiment",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-15T11:40:02.611291+00:00",
+      "exit_time": "2026-03-16T17:23:18.612607+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment short: Claude API analysis='bearish outlook, institutional distribution detected'. FinBERT: -0.75. Reddit panic selling indicators active. Social momentum: -0.81.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 3193.68 (0.4R). Blended: +0.7%.",
+      "tier": "B"
+    },
+    {
+      "id": 164,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 1.8405,
+      "entry_price": 226.1788,
+      "fill_price": 226.1563,
+      "exit_price": 229.2353,
+      "stop_loss": 221.2029,
+      "take_profit": 234.095,
+      "pnl": 5.63,
+      "fees": 0.33,
+      "slippage": 0.011,
+      "confidence": 70.2,
+      "signal_source": "technical",
+      "strategy": "transformer",
+      "exchange": "binance",
+      "entry_time": "2026-03-15T11:37:01.883406+00:00",
+      "exit_time": "2026-03-16T05:59:13.302114+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Transformer long-range dependency: 1D trend reversal aligning with 4h momentum shift. Self-attention highlights: support_test (w=0.31), volume_surge (w=0.24), macro_sentiment (w=0.18).",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 229.24 (0.9R). Blended: +1.4%.",
+      "tier": "A"
+    },
+    {
+      "id": 123,
+      "asset": "EUR/USD",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 8416.583,
+      "entry_price": 1.1038,
+      "fill_price": 1.1079,
+      "exit_price": 1.1469,
+      "stop_loss": 1.0795,
+      "take_profit": 1.1424,
+      "pnl": 363.32,
+      "fees": 7.43,
+      "slippage": 0.021,
+      "confidence": 83.9,
+      "signal_source": "sentiment",
+      "strategy": "transformer",
+      "exchange": "oanda",
+      "entry_time": "2026-03-15T10:32:58.999232+00:00",
+      "exit_time": "2026-03-15T14:20:20.811064+00:00",
+      "model_version": "v2.0",
+      "reasoning": "TFT model detects regime shift to bullish. Multi-timeframe attention: 1h (strong buy), 4h (buy), 1D (neutral\u2192bullish). Temporal pattern: accumulation phase ending. Predicted direction: UP (84%).",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 84% confidence. Closed at 1.15 for +3.9%.",
+      "tier": "A"
+    },
+    {
+      "id": 114,
+      "asset": "NVDA",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 1.2108,
+      "entry_price": 147.1044,
+      "fill_price": 147.2059,
+      "exit_price": 150.8375,
+      "stop_loss": 143.8681,
+      "take_profit": 152.253,
+      "pnl": 4.52,
+      "fees": 0.14,
+      "slippage": 0.035,
+      "confidence": 78.5,
+      "signal_source": "technical",
+      "strategy": "lstm_ensemble",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-15T08:44:18.002533+00:00",
+      "exit_time": "2026-03-16T17:18:33.367715+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts +2.4% move (confidence: 71%). Transformer confirms bullish on 4h+1D. XGBoost meta-learner score: 0.88. 3/3 models agree \u2192 STRONG_BUY. Walk-forward validated.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 78% confidence. Closed at 150.84 for +2.5%.",
+      "tier": "A"
+    },
+    {
+      "id": 200,
+      "asset": "EUR/USD",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 29501.6812,
+      "entry_price": 1.0967,
+      "fill_price": 0.9798,
+      "exit_price": 1.0408,
+      "stop_loss": 1.1209,
+      "take_profit": 1.0584,
+      "pnl": 1650.12,
+      "fees": 25.88,
+      "slippage": 0.015,
+      "confidence": 72.9,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "oanda",
+      "entry_time": "2026-03-15T00:24:20.255095+00:00",
+      "exit_time": "2026-03-16T12:14:20.034201+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment collapse: -0.67 (bearish) across 52 sources. Fear & Greed: 24 (extreme fear). Twitter negative engagement velocity +580%. Event: CPI data release.",
+      "exit_reason": "TRAILING_STOP: Trailed from 1.10 to 1.12 after +5.8% run. Locked in 5.1% profit.",
+      "tier": "A"
+    },
+    {
+      "id": 137,
+      "asset": "EUR/USD",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 20236.1732,
+      "entry_price": 1.0794,
+      "fill_price": 1.2235,
+      "exit_price": 1.1254,
+      "stop_loss": 1.0557,
+      "take_profit": 1.1172,
+      "pnl": 931.46,
+      "fees": 17.47,
+      "slippage": 0.04,
+      "confidence": 69.5,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "oanda",
+      "entry_time": "2026-03-14T21:40:31.350872+00:00",
+      "exit_time": "2026-03-15T08:06:03.878284+00:00",
+      "model_version": "v2.0",
+      "reasoning": "NLP breakout trigger: sentiment flipped from -0.15 to +0.83 in 4h. Event detection: 'CPI data release' classified as HIGH_IMPACT (urgency: 8/10). Technical confirms with volume breakout.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 70% confidence. Closed at 1.13 for +4.3%.",
+      "tier": "A+"
+    },
+    {
+      "id": 191,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 2.3325,
+      "entry_price": 3430.8264,
+      "fill_price": 3430.8928,
+      "exit_price": 3513.2821,
+      "stop_loss": 3355.3482,
+      "take_profit": 3550.9053,
+      "pnl": 192.33,
+      "fees": 6.4,
+      "slippage": 0.032,
+      "confidence": 83.3,
+      "signal_source": "technical",
+      "strategy": "lstm_ensemble",
+      "exchange": "binance",
+      "entry_time": "2026-03-14T20:57:10.614215+00:00",
+      "exit_time": "2026-03-16T06:55:46.688460+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts +2.9% move (confidence: 82%). Transformer confirms bullish on 4h+1D. XGBoost meta-learner score: 0.68. 3/3 models agree \u2192 STRONG_BUY. Walk-forward validated.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 3513.28. Dynamic exit captured 2.4% move.",
+      "tier": "B"
+    },
+    {
+      "id": 76,
+      "asset": "EUR/USD",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 49461.1158,
+      "entry_price": 1.0867,
+      "fill_price": 0.8929,
+      "exit_price": 1.1322,
+      "stop_loss": 1.0627,
+      "take_profit": 1.1247,
+      "pnl": 2254.17,
+      "fees": 43.0,
+      "slippage": 0.045,
+      "confidence": 86.1,
+      "signal_source": "sentiment",
+      "strategy": "transformer",
+      "exchange": "oanda",
+      "entry_time": "2026-03-14T20:24:13.857598+00:00",
+      "exit_time": "2026-03-16T00:14:38.799077+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Transformer long-range dependency: 1D trend reversal aligning with 4h momentum shift. Self-attention highlights: support_test (w=0.31), volume_surge (w=0.24), macro_sentiment (w=0.18).",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 1.13. Dynamic exit captured 4.2% move.",
+      "tier": "A"
+    },
+    {
+      "id": 71,
+      "asset": "AAPL",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 8.8539,
+      "entry_price": 227.6701,
+      "fill_price": 227.8481,
+      "exit_price": 236.918,
+      "stop_loss": 222.6614,
+      "take_profit": 235.6386,
+      "pnl": 81.88,
+      "fees": 1.61,
+      "slippage": 0.019,
+      "confidence": 94.5,
+      "signal_source": "technical",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-14T19:11:41.284719+00:00",
+      "exit_time": "2026-03-16T04:38:36.471962+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Mean reversion trigger: price at -2.3\u03c3 from VWAP. CCI(-146) extreme oversold. ATR-based stop at 222.66 (1.8 ATR). R:R = 1.6. Sentiment neutral \u2014 pure technical play.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 94% confidence. Closed at 236.92 for +4.1%.",
+      "tier": "A+"
+    },
+    {
+      "id": 25,
+      "asset": "SPY",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.8935,
+      "entry_price": 592.2134,
+      "fill_price": 592.105,
+      "exit_price": 623.9646,
+      "stop_loss": 579.1847,
+      "take_profit": 612.9409,
+      "pnl": 123.62,
+      "fees": 1.84,
+      "slippage": 0.021,
+      "confidence": 93.2,
+      "signal_source": "ensemble",
+      "strategy": "transformer",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-14T12:41:55.466909+00:00",
+      "exit_time": "2026-03-15T13:17:47.758374+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Transformer long-range dependency: 1D trend reversal aligning with 4h momentum shift. Self-attention highlights: support_test (w=0.31), volume_surge (w=0.24), macro_sentiment (w=0.18).",
+      "exit_reason": "TAKE_PROFIT: Target 623.96 reached. R-multiple: 3.6R. Held 24h.",
+      "tier": "A+"
+    },
+    {
+      "id": 94,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 7.9796,
+      "entry_price": 602.847,
+      "fill_price": 602.8926,
+      "exit_price": 611.3381,
+      "stop_loss": 616.1097,
+      "take_profit": 581.7474,
+      "pnl": -67.76,
+      "fees": 3.85,
+      "slippage": 0.043,
+      "confidence": 71.8,
+      "signal_source": "ensemble",
+      "strategy": "ict_confluence",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-14T11:35:59.207955+00:00",
+      "exit_time": "2026-03-14T22:38:44.079070+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Smart money short: sweep of London high at 605.36 \u2192 displacement down. Bearish OB at 602.85. Sellside liquidity target: 581.75. 6 ICT confluences.",
+      "exit_reason": "DRAWDOWN_STOP: Daily drawdown limit approaching (4.2%). Reduced exposure \u2014 closed at 611.34. Loss: 1.4%.",
+      "tier": "A+"
+    },
+    {
+      "id": 120,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 7.955,
+      "entry_price": 138.1066,
+      "fill_price": 137.949,
+      "exit_price": 132.7876,
+      "stop_loss": 141.1449,
+      "take_profit": 133.2728,
+      "pnl": 42.31,
+      "fees": 0.88,
+      "slippage": 0.024,
+      "confidence": 77.2,
+      "signal_source": "sentiment",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-14T02:51:50.768400+00:00",
+      "exit_time": "2026-03-15T13:23:14.162895+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment collapse: -0.39 (bearish) across 52 sources. Fear & Greed: 16 (extreme fear). Twitter negative engagement velocity +580%. Event: CPI data release.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 132.79 (2.6R). Blended: +3.9%.",
+      "tier": "A"
+    },
+    {
+      "id": 150,
+      "asset": "SOL/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 19.5557,
+      "entry_price": 182.2294,
+      "fill_price": 182.3061,
+      "exit_price": 184.0506,
+      "stop_loss": 186.2385,
+      "take_profit": 175.8514,
+      "pnl": -35.61,
+      "fees": 2.85,
+      "slippage": 0.022,
+      "confidence": 83.7,
+      "signal_source": "sentiment",
+      "strategy": "ict_confluence",
+      "exchange": "binance",
+      "entry_time": "2026-03-14T02:14:10.341417+00:00",
+      "exit_time": "2026-03-15T13:17:38.108113+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ICT bearish order block rejection at 182.23. Buyside liquidity swept at 182.57. Bearish FVG at 182.23 acting as supply. NY session reversal setup.",
+      "exit_reason": "STOP_LOSS: ATR-based stop at 186.24 triggered. Loss limited to 1.0%. Risk management working as designed.",
+      "tier": "A+"
+    },
+    {
+      "id": 87,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 28.9982,
+      "entry_price": 211.6572,
+      "fill_price": 211.6312,
+      "exit_price": 218.8098,
+      "stop_loss": 207.0007,
+      "take_profit": 219.0652,
+      "pnl": 207.41,
+      "fees": 4.91,
+      "slippage": 0.015,
+      "confidence": 90.3,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-14T00:15:56.885632+00:00",
+      "exit_time": "2026-03-14T21:46:59.965333+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment-driven entry: FinBERT composite=+0.42, Claude API analysis='strongly bullish, institutional accumulation likely'. Social momentum score: +0.73. Event: DeFi TVL surge +15%.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 218.81. Dynamic exit captured 3.4% move.",
+      "tier": "A"
+    },
+    {
+      "id": 211,
+      "asset": "BTC/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 0.4074,
+      "entry_price": 103279.5581,
+      "fill_price": 103279.6933,
+      "exit_price": 99187.4327,
+      "stop_loss": 105551.7084,
+      "take_profit": 99664.7736,
+      "pnl": 1667.13,
+      "fees": 33.66,
+      "slippage": 0.016,
+      "confidence": 88.3,
+      "signal_source": "ensemble",
+      "strategy": "transformer",
+      "exchange": "binance",
+      "entry_time": "2026-03-13T15:25:04.144239+00:00",
+      "exit_time": "2026-03-13T19:54:22.173846+00:00",
+      "model_version": "v2.0",
+      "reasoning": "TFT detects distribution pattern on 4h. Multi-timeframe: 1h (sell), 4h (strong sell), 1D (topping). Attention weights on: resistance_rejection (0.28), declining_volume (0.22). Predicted: DOWN (88%).",
+      "exit_reason": "TRAILING_STOP: Trailed from 103279.56 to 105551.71 after +4.6% run. Locked in 4.0% profit.",
+      "tier": "A+"
+    },
+    {
+      "id": 91,
+      "asset": "NVDA",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 6.381,
+      "entry_price": 137.6644,
+      "fill_price": 137.8261,
+      "exit_price": 135.2781,
+      "stop_loss": 134.6357,
+      "take_profit": 142.4826,
+      "pnl": -15.23,
+      "fees": 0.7,
+      "slippage": 0.033,
+      "confidence": 71.1,
+      "signal_source": "sentiment",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-13T14:10:30.246424+00:00",
+      "exit_time": "2026-03-15T00:14:41.394288+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Price 2.1 std below 20-period mean at 137.66. Stochastic K(21) in oversold zone with bullish divergence. Volume spike confirms selling exhaustion. 6/6 confluences active.",
+      "exit_reason": "DRAWDOWN_STOP: Daily drawdown limit approaching (4.2%). Reduced exposure \u2014 closed at 135.28. Loss: 1.7%.",
+      "tier": "A"
+    },
+    {
+      "id": 43,
+      "asset": "BTC/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 0.1904,
+      "entry_price": 104823.3837,
+      "fill_price": 104823.272,
+      "exit_price": 107049.107,
+      "stop_loss": 102517.2692,
+      "take_profit": 108492.2021,
+      "pnl": 423.78,
+      "fees": 15.97,
+      "slippage": 0.019,
+      "confidence": 83.1,
+      "signal_source": "ensemble",
+      "strategy": "mean_reversion",
+      "exchange": "binance",
+      "entry_time": "2026-03-13T13:45:28.291450+00:00",
+      "exit_time": "2026-03-13T14:54:51.723824+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Price 2.1 std below 20-period mean at 104823.38. Stochastic K(9) in oversold zone with bullish divergence. Volume spike confirms selling exhaustion. 5/6 confluences active.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 107049.11 (1.4R). Blended: +2.1%.",
+      "tier": "A+"
+    },
+    {
+      "id": 57,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 8.1929,
+      "entry_price": 140.658,
+      "fill_price": 140.5822,
+      "exit_price": 136.8633,
+      "stop_loss": 143.7524,
+      "take_profit": 135.7349,
+      "pnl": 31.09,
+      "fees": 0.92,
+      "slippage": 0.024,
+      "confidence": 87.8,
+      "signal_source": "ensemble",
+      "strategy": "transformer",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-13T11:29:26.477948+00:00",
+      "exit_time": "2026-03-13T16:23:49.918059+00:00",
+      "model_version": "v2.0",
+      "reasoning": "TFT detects distribution pattern on 4h. Multi-timeframe: 1h (sell), 4h (strong sell), 1D (topping). Attention weights on: resistance_rejection (0.28), declining_volume (0.22). Predicted: DOWN (88%).",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 136.86. Dynamic exit captured 2.7% move.",
+      "tier": "A"
+    },
+    {
+      "id": 202,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 0.9715,
+      "entry_price": 3652.0488,
+      "fill_price": 3652.0696,
+      "exit_price": 3817.5916,
+      "stop_loss": 3571.7037,
+      "take_profit": 3779.8705,
+      "pnl": 160.82,
+      "fees": 2.84,
+      "slippage": 0.039,
+      "confidence": 92.6,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-13T09:09:31.579736+00:00",
+      "exit_time": "2026-03-14T16:27:25.940753+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment-driven entry: FinBERT composite=+0.55, Claude API analysis='strongly bullish, institutional accumulation likely'. Social momentum score: +0.73. Event: ECB rate hold.",
+      "exit_reason": "TAKE_PROFIT: Target 3817.59 reached. R-multiple: 3.0R. Held 31h.",
+      "tier": "A+"
+    },
+    {
+      "id": 32,
+      "asset": "SOL/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 39.3979,
+      "entry_price": 187.9352,
+      "fill_price": 188.0292,
+      "exit_price": 181.0218,
+      "stop_loss": 192.0697,
+      "take_profit": 181.3574,
+      "pnl": 272.37,
+      "fees": 5.92,
+      "slippage": 0.018,
+      "confidence": 79.4,
+      "signal_source": "ensemble",
+      "strategy": "lstm_ensemble",
+      "exchange": "binance",
+      "entry_time": "2026-03-13T03:43:27.588631+00:00",
+      "exit_time": "2026-03-14T15:32:08.672848+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts -3.6% move (confidence: 80%). Transformer bearish divergence on multi-timeframe. XGBoost meta-learner: 0.84. Ensemble: STRONG_SELL.",
+      "exit_reason": "TAKE_PROFIT: Target 181.02 reached. R-multiple: 2.5R. Held 35h.",
+      "tier": "A"
+    },
+    {
+      "id": 5,
+      "asset": "SPY",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.2088,
+      "entry_price": 601.5465,
+      "fill_price": 601.6931,
+      "exit_price": 627.3168,
+      "stop_loss": 588.3125,
+      "take_profit": 622.6007,
+      "pnl": 82.69,
+      "fees": 1.54,
+      "slippage": 0.037,
+      "confidence": 95.2,
+      "signal_source": "sentiment",
+      "strategy": "transformer",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-12T22:13:59.286216+00:00",
+      "exit_time": "2026-03-13T09:03:13.008193+00:00",
+      "model_version": "v2.0",
+      "reasoning": "TFT model detects regime shift to bullish. Multi-timeframe attention: 1h (strong buy), 4h (buy), 1D (neutral\u2192bullish). Temporal pattern: accumulation phase ending. Predicted direction: UP (95%).",
+      "exit_reason": "TRAILING_STOP: Trailed from 601.55 to 588.31 after +5.9% run. Locked in 4.3% profit.",
+      "tier": "A+"
+    },
+    {
+      "id": 62,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 8.3717,
+      "entry_price": 141.215,
+      "fill_price": 141.3584,
+      "exit_price": 134.1877,
+      "stop_loss": 144.3217,
+      "take_profit": 136.2724,
+      "pnl": 58.83,
+      "fees": 0.95,
+      "slippage": 0.036,
+      "confidence": 90.9,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-12T20:24:02.951208+00:00",
+      "exit_time": "2026-03-13T19:16:27.105329+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment short: Claude API analysis='bearish outlook, institutional distribution detected'. FinBERT: -0.48. Reddit panic selling indicators active. Social momentum: -0.81.",
+      "exit_reason": "TRAILING_STOP: Trailed from 141.21 to 144.32 after +5.7% run. Locked in 5.0% profit.",
+      "tier": "A+"
+    },
+    {
+      "id": 122,
+      "asset": "SPY",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 4.6775,
+      "entry_price": 600.6502,
+      "fill_price": 600.7868,
+      "exit_price": 608.1207,
+      "stop_loss": 587.4359,
+      "take_profit": 621.673,
+      "pnl": 34.94,
+      "fees": 2.25,
+      "slippage": 0.048,
+      "confidence": 91.0,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-12T19:50:32.251269+00:00",
+      "exit_time": "2026-03-13T18:28:42.423355+00:00",
+      "model_version": "v2.0",
+      "reasoning": "NLP breakout trigger: sentiment flipped from -0.15 to +0.43 in 4h. Event detection: 'CPI data release' classified as HIGH_IMPACT (urgency: 8/10). Technical confirms with volume breakout.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 608.12. Dynamic exit captured 1.2% move.",
+      "tier": "A+"
+    },
+    {
+      "id": 99,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 4.9,
+      "entry_price": 596.9774,
+      "fill_price": 596.8349,
+      "exit_price": 581.0107,
+      "stop_loss": 610.1109,
+      "take_profit": 576.0832,
+      "pnl": 78.24,
+      "fees": 2.34,
+      "slippage": 0.018,
+      "confidence": 94.2,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-12T16:05:43.152002+00:00",
+      "exit_time": "2026-03-13T01:08:11.039018+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment collapse: -0.67 (bearish) across 52 sources. Fear & Greed: 15 (extreme fear). Twitter negative engagement velocity +580%. Event: CPI data release.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 94% confidence. Closed at 581.01 for +2.7%.",
+      "tier": "A"
+    },
+    {
+      "id": 73,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.3144,
+      "entry_price": 3226.051,
+      "fill_price": 3226.0791,
+      "exit_price": 3341.8496,
+      "stop_loss": 3155.0779,
+      "take_profit": 3338.9628,
+      "pnl": 383.8,
+      "fees": 8.55,
+      "slippage": 0.016,
+      "confidence": 75.4,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-12T13:11:43.279567+00:00",
+      "exit_time": "2026-03-12T16:41:45.645914+00:00",
+      "model_version": "v2.0",
+      "reasoning": "NLP breakout trigger: sentiment flipped from -0.15 to +0.43 in 4h. Event detection: 'Major partnership announcement' classified as HIGH_IMPACT (urgency: 8/10). Technical confirms with volume breakout.",
+      "exit_reason": "TAKE_PROFIT: Target 3341.85 reached. R-multiple: 2.4R. Held 3h.",
+      "tier": "A"
+    },
+    {
+      "id": 133,
+      "asset": "SOL/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 40.1033,
+      "entry_price": 216.6077,
+      "fill_price": 216.6822,
+      "exit_price": 206.6837,
+      "stop_loss": 221.3731,
+      "take_profit": 209.0264,
+      "pnl": 397.98,
+      "fees": 6.95,
+      "slippage": 0.027,
+      "confidence": 72.9,
+      "signal_source": "ensemble",
+      "strategy": "mean_reversion",
+      "exchange": "binance",
+      "entry_time": "2026-03-12T01:42:47.930862+00:00",
+      "exit_time": "2026-03-12T20:07:43.256036+00:00",
+      "model_version": "v2.0",
+      "reasoning": "RSI(68) overbought + BB upper band rejection at 216.61. MACD bearish crossover confirmed. 4H mean reversion short with 3/6 confluences.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 206.68 (3.1R). Blended: +4.6%.",
+      "tier": "A+"
+    },
+    {
+      "id": 105,
+      "asset": "AAPL",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 16.323,
+      "entry_price": 220.3,
+      "fill_price": 220.4215,
+      "exit_price": 231.8585,
+      "stop_loss": 215.4534,
+      "take_profit": 228.0105,
+      "pnl": 188.67,
+      "fees": 2.88,
+      "slippage": 0.043,
+      "confidence": 77.5,
+      "signal_source": "ensemble",
+      "strategy": "ict_confluence",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-11T23:38:12.585669+00:00",
+      "exit_time": "2026-03-12T10:36:28.099956+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Smart money long: sweep of Asian session low at 218.32 \u2192 immediate displacement up. Bullish OB at 219.81 holding. Institutional buying footprint in order flow. 3 ICT confluences.",
+      "exit_reason": "TRAILING_STOP: Trailed from 220.30 to 215.45 after +7.8% run. Locked in 5.2% profit.",
+      "tier": "A+"
+    },
+    {
+      "id": 186,
+      "asset": "ETH/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 4.353,
+      "entry_price": 3448.6021,
+      "fill_price": 3448.5667,
+      "exit_price": 3267.3999,
+      "stop_loss": 3524.4714,
+      "take_profit": 3327.901,
+      "pnl": 788.77,
+      "fees": 12.01,
+      "slippage": 0.02,
+      "confidence": 79.9,
+      "signal_source": "sentiment",
+      "strategy": "transformer",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T21:56:51.068383+00:00",
+      "exit_time": "2026-03-12T07:09:19.834716+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Transformer short signal: long-range bearish dependency detected across 3 timeframes. Key features: trend_exhaustion (w=0.33), sentiment_shift (w=0.21). Walk-forward P&L positive on last 30 predictions.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 3267.40. Dynamic exit captured 5.3% move.",
+      "tier": "A+"
+    },
+    {
+      "id": 59,
+      "asset": "EUR/USD",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 15859.9496,
+      "entry_price": 1.1077,
+      "fill_price": 1.1469,
+      "exit_price": 1.0794,
+      "stop_loss": 1.1321,
+      "take_profit": 1.0689,
+      "pnl": 449.34,
+      "fees": 14.05,
+      "slippage": 0.049,
+      "confidence": 95.0,
+      "signal_source": "sentiment",
+      "strategy": "lstm_ensemble",
+      "exchange": "oanda",
+      "entry_time": "2026-03-11T21:14:52.206315+00:00",
+      "exit_time": "2026-03-12T12:21:04.135534+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ML ensemble SHORT: LSTM direction=DOWN (p=84%), CNN detected head & shoulders pattern. Feature importance: RSI_overbought (0.21), volume_decline (0.18). Predicted: -2.5%.",
+      "exit_reason": "TAKE_PROFIT: Target 1.08 reached. R-multiple: 1.7R. Held 15h.",
+      "tier": "A"
+    },
+    {
+      "id": 116,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.5376,
+      "entry_price": 184.1727,
+      "fill_price": 184.325,
+      "exit_price": 181.1618,
+      "stop_loss": 180.1209,
+      "take_profit": 190.6188,
+      "pnl": -10.65,
+      "fees": 0.52,
+      "slippage": 0.045,
+      "confidence": 73.0,
+      "signal_source": "sentiment",
+      "strategy": "lstm_ensemble",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T21:05:44.735989+00:00",
+      "exit_time": "2026-03-13T01:19:10.608531+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ML ensemble LONG signal: LSTM direction=UP (p=67%), Transformer momentum=bullish, CNN pattern=ascending triangle (82% completion). Ensemble confidence: 73%.",
+      "exit_reason": "TIME_STOP: Position held 28h without progress. Closed at 181.16 for 1.6%. Opportunity cost management.",
+      "tier": "B"
+    },
+    {
+      "id": 213,
+      "asset": "SPY",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 5.9964,
+      "entry_price": 604.8983,
+      "fill_price": 604.7415,
+      "exit_price": 614.8465,
+      "stop_loss": 591.5906,
+      "take_profit": 626.0698,
+      "pnl": 59.65,
+      "fees": 2.9,
+      "slippage": 0.027,
+      "confidence": 70.7,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-11T19:20:32.569773+00:00",
+      "exit_time": "2026-03-13T05:30:10.406756+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment surge: +0.52 (bullish) across 47 sources. Fear & Greed Index: 55 (shifting to greed). Reddit r/cryptocurrency volume +340% on SPY. Breaking news: positive regulatory signal.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 614.85 (1.1R). Blended: +1.6%.",
+      "tier": "A"
+    },
+    {
+      "id": 155,
+      "asset": "BTC/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 0.1661,
+      "entry_price": 97404.1949,
+      "fill_price": 97404.3472,
+      "exit_price": 96839.0209,
+      "stop_loss": 95261.3027,
+      "take_profit": 100813.3418,
+      "pnl": -93.88,
+      "fees": 12.94,
+      "slippage": 0.019,
+      "confidence": 72.2,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T16:54:49.306500+00:00",
+      "exit_time": "2026-03-12T05:45:55.595976+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment surge: +0.49 (bullish) across 47 sources. Fear & Greed Index: 58 (shifting to greed). Reddit r/cryptocurrency volume +340% on BTC/USDT. Breaking news: positive regulatory signal.",
+      "exit_reason": "STOP_LOSS: ATR-based stop at 95261.30 triggered. Loss limited to 0.6%. Risk management working as designed.",
+      "tier": "A"
+    },
+    {
+      "id": 145,
+      "asset": "SOL/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 20.4619,
+      "entry_price": 200.3124,
+      "fill_price": 200.3462,
+      "exit_price": 204.3175,
+      "stop_loss": 204.7193,
+      "take_profit": 193.3015,
+      "pnl": -81.95,
+      "fees": 3.28,
+      "slippage": 0.05,
+      "confidence": 73.5,
+      "signal_source": "sentiment",
+      "strategy": "ict_confluence",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T10:16:14.105668+00:00",
+      "exit_time": "2026-03-11T13:22:50.969720+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Smart money short: sweep of London high at 202.01 \u2192 displacement down. Bearish OB at 200.31. Sellside liquidity target: 193.30. 6 ICT confluences.",
+      "exit_reason": "DRAWDOWN_STOP: Daily drawdown limit approaching (4.2%). Reduced exposure \u2014 closed at 204.32. Loss: 2.0%.",
+      "tier": "A+"
+    },
+    {
+      "id": 36,
+      "asset": "EUR/USD",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 6326.7073,
+      "entry_price": 1.0906,
+      "fill_price": 1.0468,
+      "exit_price": 1.0396,
+      "stop_loss": 1.1145,
+      "take_profit": 1.0524,
+      "pnl": 322.63,
+      "fees": 5.52,
+      "slippage": 0.017,
+      "confidence": 75.5,
+      "signal_source": "technical",
+      "strategy": "lstm_ensemble",
+      "exchange": "oanda",
+      "entry_time": "2026-03-11T06:30:06.015015+00:00",
+      "exit_time": "2026-03-11T22:57:11.254553+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts -4.0% move (confidence: 69%). Transformer bearish divergence on multi-timeframe. XGBoost meta-learner: 0.65. Ensemble: STRONG_SELL.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 1.04 (3.1R). Blended: +4.7%.",
+      "tier": "B"
+    },
+    {
+      "id": 190,
+      "asset": "EUR/USD",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 31786.193,
+      "entry_price": 1.1021,
+      "fill_price": 1.1191,
+      "exit_price": 1.1096,
+      "stop_loss": 1.1264,
+      "take_profit": 1.0636,
+      "pnl": -236.03,
+      "fees": 28.03,
+      "slippage": 0.041,
+      "confidence": 91.4,
+      "signal_source": "ensemble",
+      "strategy": "lstm_ensemble",
+      "exchange": "oanda",
+      "entry_time": "2026-03-11T06:04:39.378121+00:00",
+      "exit_time": "2026-03-12T15:14:58.773158+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts -0.9% move (confidence: 87%). Transformer bearish divergence on multi-timeframe. XGBoost meta-learner: 0.86. Ensemble: STRONG_SELL.",
+      "exit_reason": "TIME_STOP: Position held 33h without progress. Closed at 1.11 for 0.7%. Opportunity cost management.",
+      "tier": "A"
+    },
+    {
+      "id": 152,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 40.1834,
+      "entry_price": 214.4274,
+      "fill_price": 214.2874,
+      "exit_price": 218.2174,
+      "stop_loss": 209.71,
+      "take_profit": 221.9324,
+      "pnl": 152.29,
+      "fees": 6.89,
+      "slippage": 0.027,
+      "confidence": 71.0,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T05:09:06.019554+00:00",
+      "exit_time": "2026-03-12T03:32:11.394231+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment surge: +0.46 (bullish) across 47 sources. Fear & Greed Index: 64 (shifting to greed). Reddit r/cryptocurrency volume +340% on SOL/USDT. Breaking news: positive regulatory signal.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 218.22. Dynamic exit captured 1.8% move.",
+      "tier": "A"
+    },
+    {
+      "id": 100,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 37.5638,
+      "entry_price": 229.1278,
+      "fill_price": 229.0429,
+      "exit_price": 224.6221,
+      "stop_loss": 224.0869,
+      "take_profit": 237.1472,
+      "pnl": -169.25,
+      "fees": 6.89,
+      "slippage": 0.04,
+      "confidence": 68.7,
+      "signal_source": "ensemble",
+      "strategy": "transformer",
+      "exchange": "binance",
+      "entry_time": "2026-03-11T04:39:09.129843+00:00",
+      "exit_time": "2026-03-11T09:34:05.339965+00:00",
+      "model_version": "v2.0",
+      "reasoning": "TFT model detects regime shift to bullish. Multi-timeframe attention: 1h (strong buy), 4h (buy), 1D (neutral\u2192bullish). Temporal pattern: accumulation phase ending. Predicted direction: UP (69%).",
+      "exit_reason": "STOP_LOSS: ATR-based stop at 224.09 triggered. Loss limited to 2.0%. Risk management working as designed.",
+      "tier": "A"
+    },
+    {
+      "id": 72,
+      "asset": "NVDA",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 4.188,
+      "entry_price": 130.4652,
+      "fill_price": 130.6309,
+      "exit_price": 132.1781,
+      "stop_loss": 127.5949,
+      "take_profit": 135.0314,
+      "pnl": 7.17,
+      "fees": 0.44,
+      "slippage": 0.036,
+      "confidence": 95.0,
+      "signal_source": "technical",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-10T15:07:29.781849+00:00",
+      "exit_time": "2026-03-10T17:30:24.561003+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Price 2.1 std below 20-period mean at 130.47. Stochastic K(20) in oversold zone with bullish divergence. Volume spike confirms selling exhaustion. 3/6 confluences active.",
+      "exit_reason": "PARTIAL_TP: Took 50% at 1R, remainder closed at 132.18 (0.9R). Blended: +1.3%.",
+      "tier": "A+"
+    },
+    {
+      "id": 174,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 9.8867,
+      "entry_price": 131.6164,
+      "fill_price": 131.4633,
+      "exit_price": 131.8074,
+      "stop_loss": 134.5119,
+      "take_profit": 127.0098,
+      "pnl": -1.89,
+      "fees": 1.04,
+      "slippage": 0.032,
+      "confidence": 76.0,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-10T14:12:19.573083+00:00",
+      "exit_time": "2026-03-12T01:24:36.467682+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Sentiment short: Claude API analysis='bearish outlook, institutional distribution detected'. FinBERT: -0.61. Reddit panic selling indicators active. Social momentum: -0.81.",
+      "exit_reason": "STOP_LOSS: Hit 2 ATR stop at 134.51. Unexpected ETF approval speculation. Loss: 0.1%. Within 1.5% portfolio risk budget.",
+      "tier": "B"
+    },
+    {
+      "id": 3,
+      "asset": "AAPL",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 13.403,
+      "entry_price": 244.9004,
+      "fill_price": 244.7954,
+      "exit_price": 254.7128,
+      "stop_loss": 239.5126,
+      "take_profit": 253.472,
+      "pnl": 131.52,
+      "fees": 2.63,
+      "slippage": 0.027,
+      "confidence": 96.1,
+      "signal_source": "ensemble",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-10T08:59:52.076159+00:00",
+      "exit_time": "2026-03-11T04:48:42.763448+00:00",
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment surge: +0.83 (bullish) across 47 sources. Fear & Greed Index: 68 (shifting to greed). Reddit r/cryptocurrency volume +340% on AAPL. Breaking news: positive regulatory signal.",
+      "exit_reason": "TAKE_PROFIT: Target 254.71 reached. R-multiple: 2.7R. Held 19h.",
+      "tier": "A"
+    },
+    {
+      "id": 112,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 4.0162,
+      "entry_price": 580.1306,
+      "fill_price": 580.2637,
+      "exit_price": 570.1628,
+      "stop_loss": 592.8934,
+      "take_profit": 559.826,
+      "pnl": 40.03,
+      "fees": 1.86,
+      "slippage": 0.012,
+      "confidence": 83.8,
+      "signal_source": "sentiment",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-10T08:31:50.416366+00:00",
+      "exit_time": "2026-03-11T06:17:48.200723+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Price 2.4 std above 20-period mean. Stochastic K(95) overbought with bearish divergence. Volume declining on rally \u2014 distribution pattern. Tier: A.",
+      "exit_reason": "SIGNAL_EXIT: Opposing signal detected at 84% confidence. Closed at 570.16 for +1.7%.",
+      "tier": "A"
+    },
+    {
+      "id": 118,
+      "asset": "EUR/USD",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 22401.9841,
+      "entry_price": 1.0979,
+      "fill_price": 1.0295,
+      "exit_price": 1.1098,
+      "stop_loss": 1.122,
+      "take_profit": 1.0594,
+      "pnl": -267.02,
+      "fees": 19.68,
+      "slippage": 0.04,
+      "confidence": 86.1,
+      "signal_source": "sentiment",
+      "strategy": "mean_reversion",
+      "exchange": "oanda",
+      "entry_time": "2026-03-10T00:51:10.026386+00:00",
+      "exit_time": "2026-03-10T20:14:40.489328+00:00",
+      "model_version": "v2.0",
+      "reasoning": "Price 2.4 std above 20-period mean. Stochastic K(92) overbought with bearish divergence. Volume declining on rally \u2014 distribution pattern. Tier: B.",
+      "exit_reason": "STOP_LOSS: ATR-based stop at 1.12 triggered. Loss limited to 1.1%. Risk management working as designed.",
+      "tier": "B"
+    },
+    {
+      "id": 131,
+      "asset": "ETH/USDT",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 0.836,
+      "entry_price": 3275.7435,
+      "fill_price": 3275.6176,
+      "exit_price": 3169.353,
+      "stop_loss": 3347.8098,
+      "take_profit": 3161.0924,
+      "pnl": 88.94,
+      "fees": 2.19,
+      "slippage": 0.038,
+      "confidence": 75.3,
+      "signal_source": "technical",
+      "strategy": "mean_reversion",
+      "exchange": "binance",
+      "entry_time": "2026-03-09T17:46:18.371892+00:00",
+      "exit_time": "2026-03-10T02:33:07.912661+00:00",
+      "model_version": "v2.0",
+      "reasoning": "RSI(69) overbought + BB upper band rejection at 3275.74. MACD bearish crossover confirmed. 4H mean reversion short with 5/6 confluences.",
+      "exit_reason": "TAKE_PROFIT: Target 3169.35 reached. R-multiple: 2.2R. Held 8h.",
+      "tier": "A"
+    },
+    {
+      "id": 172,
+      "asset": "NVDA",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 4.1736,
+      "entry_price": 136.3495,
+      "fill_price": 136.1815,
+      "exit_price": 138.1579,
+      "stop_loss": 133.3498,
+      "take_profit": 141.1217,
+      "pnl": 7.55,
+      "fees": 0.46,
+      "slippage": 0.029,
+      "confidence": 90.5,
+      "signal_source": "sentiment",
+      "strategy": "ict_confluence",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-09T17:32:39.430038+00:00",
+      "exit_time": "2026-03-10T16:24:48.148010+00:00",
+      "model_version": "v2.0",
+      "reasoning": "ICT bullish order block at 136.07 with FVG fill. Liquidity sweep below 135.85 low confirmed. London kill zone entry (08:15 UTC). Displacement candle +2.1 ATR.",
+      "exit_reason": "BB_MIDDLE_TP: Price reverted to BB middle at 138.16. Dynamic exit captured 1.3% move.",
+      "tier": "A+"
+    },
+    {
+      "id": 230,
+      "asset": "SPY",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 7.2334,
+      "entry_price": 602.5762,
+      "fill_price": 602.5588,
+      "exit_price": 613.18,
+      "stop_loss": 589.3196,
+      "take_profit": 623.6664,
+      "pnl": 76.7,
+      "fees": 3.49,
+      "slippage": 0.022,
+      "confidence": 77.1,
+      "signal_source": "sentiment",
+      "strategy": "lstm_ensemble",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-09T13:33:54.759373+00:00",
+      "exit_time": "2026-03-09T21:45:06.359400+00:00",
+      "model_version": "v2.0",
+      "reasoning": "LSTM predicts +1.9% move (confidence: 73%). Transformer confirms bullish on 4h+1D. XGBoost meta-learner score: 0.77. 3/3 models agree \u2192 STRONG_BUY. Walk-forward validated.",
+      "exit_reason": "TAKE_PROFIT: Target 613.18 reached. R-multiple: 1.2R. Held 8h.",
+      "tier": "B"
+    }
+  ],
+  "openPositions": [
+    {
+      "id": 246,
+      "asset": "AAPL",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 18.1713,
+      "entry_price": 243.9505,
+      "fill_price": 243.8256,
+      "exit_price": null,
+      "stop_loss": 249.3174,
+      "take_profit": 235.4122,
+      "pnl": null,
+      "fees": 3.55,
+      "slippage": 0.028,
+      "confidence": 95.6,
+      "signal_source": "ensemble",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-07T04:47:31.201535+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "RSI(84) overbought + BB upper band rejection at 243.95. MACD bearish crossover confirmed. 4H mean reversion short with 4/6 confluences.",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 244,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 1.7322,
+      "entry_price": 3488.2124,
+      "fill_price": 3488.1366,
+      "exit_price": null,
+      "stop_loss": 3411.4717,
+      "take_profit": 3610.2998,
+      "pnl": null,
+      "fees": 4.83,
+      "slippage": 0.022,
+      "confidence": 90.9,
+      "signal_source": "sentiment",
+      "strategy": "mean_reversion",
+      "exchange": "binance",
+      "entry_time": "2026-03-05T07:14:20.339311+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "Mean reversion trigger: price at -2.3\u03c3 from VWAP. CCI(-165) extreme oversold. ATR-based stop at 3411.47 (1.8 ATR). R:R = 2.5. Sentiment neutral \u2014 pure technical play.",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 247,
+      "asset": "SPY",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 3.8004,
+      "entry_price": 584.5553,
+      "fill_price": 584.4807,
+      "exit_price": null,
+      "stop_loss": 597.4155,
+      "take_profit": 564.0958,
+      "pnl": null,
+      "fees": 1.78,
+      "slippage": 0.038,
+      "confidence": 72.0,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-02T22:25:37.027995+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "FinBERT sentiment collapse: -0.51 (bearish) across 52 sources. Fear & Greed: 29 (extreme fear). Twitter negative engagement velocity +580%. Event: CPI data release.",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 249,
+      "asset": "AAPL",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.0523,
+      "entry_price": 237.1473,
+      "fill_price": 237.174,
+      "exit_price": null,
+      "stop_loss": 231.93,
+      "take_profit": 245.4474,
+      "pnl": null,
+      "fees": 0.58,
+      "slippage": 0.038,
+      "confidence": 76.1,
+      "signal_source": "technical",
+      "strategy": "mean_reversion",
+      "exchange": "alpaca",
+      "entry_time": "2026-03-02T21:07:24.373999+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "BB squeeze breakout pending. RSI(32) bouncing from 28 with bullish divergence on 1D. Order block support at 235.78. ICT discount zone entry. Tier: A.",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 243,
+      "asset": "ETH/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 3.5053,
+      "entry_price": 3290.5093,
+      "fill_price": 3290.4095,
+      "exit_price": null,
+      "stop_loss": 3218.1181,
+      "take_profit": 3405.6771,
+      "pnl": null,
+      "fees": 9.23,
+      "slippage": 0.05,
+      "confidence": 96.1,
+      "signal_source": "ensemble",
+      "strategy": "mean_reversion",
+      "exchange": "binance",
+      "entry_time": "2026-02-18T15:58:37.314964+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "RSI(25) oversold + BB lower band touch at 3290.51. MACD histogram turning positive. 4H mean reversion setup with 96% ensemble confidence. Kelly size: 1.5% of portfolio.",
+      "exit_reason": null,
+      "tier": "A+"
+    },
+    {
+      "id": 248,
+      "asset": "SOL/USDT",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 45.0763,
+      "entry_price": 224.7039,
+      "fill_price": 224.8273,
+      "exit_price": null,
+      "stop_loss": 219.7604,
+      "take_profit": 232.5685,
+      "pnl": null,
+      "fees": 8.1,
+      "slippage": 0.041,
+      "confidence": 79.6,
+      "signal_source": "technical",
+      "strategy": "transformer",
+      "exchange": "binance",
+      "entry_time": "2026-02-17T23:05:04.376818+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "TFT model detects regime shift to bullish. Multi-timeframe attention: 1h (strong buy), 4h (buy), 1D (neutral\u2192bullish). Temporal pattern: accumulation phase ending. Predicted direction: UP (80%).",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 245,
+      "asset": "NVDA",
+      "side": "SHORT",
+      "direction": "SHORT",
+      "size": 6.5577,
+      "entry_price": 143.3907,
+      "fill_price": 143.4737,
+      "exit_price": null,
+      "stop_loss": 146.5453,
+      "take_profit": 138.372,
+      "pnl": null,
+      "fees": 0.75,
+      "slippage": 0.046,
+      "confidence": 73.0,
+      "signal_source": "ensemble",
+      "strategy": "ict_confluence",
+      "exchange": "alpaca",
+      "entry_time": "2026-02-17T04:31:37.344850+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "Smart money short: sweep of London high at 144.66 \u2192 displacement down. Bearish OB at 143.39. Sellside liquidity target: 138.37. 6 ICT confluences.",
+      "exit_reason": null,
+      "tier": "A"
+    },
+    {
+      "id": 250,
+      "asset": "AAPL",
+      "side": "LONG",
+      "direction": "LONG",
+      "size": 5.9046,
+      "entry_price": 221.5091,
+      "fill_price": 221.5426,
+      "exit_price": null,
+      "stop_loss": 216.6359,
+      "take_profit": 229.262,
+      "pnl": null,
+      "fees": 1.05,
+      "slippage": 0.029,
+      "confidence": 85.7,
+      "signal_source": "technical",
+      "strategy": "sentiment_breakout",
+      "exchange": "alpaca",
+      "entry_time": "2026-02-16T07:16:51.620316+00:00",
+      "exit_time": null,
+      "model_version": "v2.0",
+      "reasoning": "NLP breakout trigger: sentiment flipped from -0.15 to +0.48 in 4h. Event detection: 'DeFi TVL surge +15%' classified as HIGH_IMPACT (urgency: 8/10). Technical confirms with volume breakout.",
+      "exit_reason": null,
+      "tier": "A+"
+    }
+  ],
+  "exportedAt": "2026-03-16T03:20:00.199827"
+}
