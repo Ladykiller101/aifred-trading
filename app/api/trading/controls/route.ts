@@ -4,6 +4,49 @@ import { join } from "path";
 
 export const dynamic = "force-dynamic";
 
+// Use /tmp for writes (writable on Vercel), fall back to data/ for reads
+const TMP_DIR = "/tmp/aifred-data";
+const DATA_DIR = join(process.cwd(), "data");
+
+function ensureTmpDir() {
+  if (!existsSync(TMP_DIR)) mkdirSync(TMP_DIR, { recursive: true });
+}
+
+// ---------------------------------------------------------------------------
+// Activity log helper
+// ---------------------------------------------------------------------------
+
+function appendActivity(entry: {
+  type: string;
+  severity: string;
+  title: string;
+  message: string;
+  details?: Record<string, unknown>;
+}) {
+  try {
+    ensureTmpDir();
+    const paths = [join(TMP_DIR, "activity-log.json"), join(DATA_DIR, "activity-log.json")];
+    let activities: unknown[] = [];
+    for (const p of paths) {
+      if (existsSync(p)) {
+        try {
+          const raw = JSON.parse(readFileSync(p, "utf-8"));
+          if (Array.isArray(raw)) { activities = raw; break; }
+        } catch { /* ignore */ }
+      }
+    }
+    activities.push({
+      id: `act_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: new Date().toISOString(),
+      ...entry,
+    });
+    if (activities.length > 500) activities = activities.slice(-500);
+    writeFileSync(join(TMP_DIR, "activity-log.json"), JSON.stringify(activities, null, 2), "utf-8");
+  } catch (e) {
+    console.error("Failed to log activity from controls route:", e);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Trading controls state
 // ---------------------------------------------------------------------------
@@ -16,8 +59,8 @@ interface TradingControlsState {
   lastScan: string | null;
 }
 
-const DATA_DIR = join(process.cwd(), "data");
-const CONTROLS_PATH = join(DATA_DIR, "trading-controls.json");
+const CONTROLS_PATH_TMP = join(TMP_DIR, "trading-controls.json");
+const CONTROLS_PATH_DATA = join(DATA_DIR, "trading-controls.json");
 
 const DEFAULT_STATE: TradingControlsState = {
   mode: "paper",
@@ -27,24 +70,21 @@ const DEFAULT_STATE: TradingControlsState = {
   lastScan: null,
 };
 
-function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
-  }
-}
-
 function readState(): TradingControlsState {
-  if (!existsSync(CONTROLS_PATH)) return { ...DEFAULT_STATE };
-  try {
-    return { ...DEFAULT_STATE, ...JSON.parse(readFileSync(CONTROLS_PATH, "utf-8")) };
-  } catch {
-    return { ...DEFAULT_STATE };
+  // Try /tmp first (latest writes), then data/ (seeded defaults)
+  for (const p of [CONTROLS_PATH_TMP, CONTROLS_PATH_DATA]) {
+    if (existsSync(p)) {
+      try {
+        return { ...DEFAULT_STATE, ...JSON.parse(readFileSync(p, "utf-8")) };
+      } catch { /* ignore */ }
+    }
   }
+  return { ...DEFAULT_STATE };
 }
 
 function writeState(state: TradingControlsState) {
-  ensureDataDir();
-  writeFileSync(CONTROLS_PATH, JSON.stringify(state, null, 2), "utf-8");
+  ensureTmpDir();
+  writeFileSync(CONTROLS_PATH_TMP, JSON.stringify(state, null, 2), "utf-8");
 }
 
 // ---------------------------------------------------------------------------
@@ -125,6 +165,33 @@ export async function POST(request: NextRequest) {
     }
 
     writeState(state);
+
+    // Log activity for state changes
+    if (action === "start") {
+      appendActivity({
+        type: "system_start",
+        severity: "success",
+        title: "Trading System Started",
+        message: `Trading engine started in ${state.mode} mode. Monitoring ${state.assets.length} assets.`,
+        details: { tier: state.mode },
+      });
+    } else if (action === "stop") {
+      appendActivity({
+        type: "system_stop",
+        severity: "warning",
+        title: "Trading System Stopped",
+        message: `Trading engine stopped. Mode was: ${state.mode}.`,
+        details: { tier: state.mode },
+      });
+    } else if (action === "toggle_mode") {
+      appendActivity({
+        type: state.mode === "live" ? "system_stop" : "optimization",
+        severity: state.mode === "live" ? "warning" : "info",
+        title: `Mode Changed to ${state.mode.toUpperCase()}`,
+        message: `Trading mode switched to ${state.mode}.${state.mode === "live" ? " CAUTION: Real money mode. Trading auto-stopped for safety." : " Paper trading active."}`,
+        details: { tier: state.mode },
+      });
+    }
 
     return NextResponse.json({
       success: true,

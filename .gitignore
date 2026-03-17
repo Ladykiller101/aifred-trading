@@ -18,3 +18,4 @@ python/data/
 
 # OS
 .DS_Store
+.vercel

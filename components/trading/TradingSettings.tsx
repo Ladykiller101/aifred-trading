@@ -238,31 +238,103 @@ export default function TradingSettings() {
     };
   }, []);
 
-  // Load brokers from API
+  // Load brokers — merge API data with localStorage (localStorage wins for connection status)
   useEffect(() => {
+    const categoryToIcon: Record<string, Broker["icon"]> = {
+      crypto: "coins",
+      stocks: "building",
+      "stocks/options": "building",
+      forex: "globe",
+      all: "monitor",
+    };
+
+    // Read persisted connections from localStorage
+    let savedConnections: Record<string, string> = {};
+    try {
+      const raw = localStorage.getItem("aifred_broker_connections");
+      if (raw) savedConnections = JSON.parse(raw);
+    } catch { /* ignore */ }
+
     fetch("/api/trading/brokers")
       .then((r) => r.json())
       .then((data) => {
         if (data && Array.isArray(data.brokers)) {
-          setBrokers(data.brokers);
+          const mapped: Broker[] = data.brokers.map(
+            (b: Record<string, unknown>) => ({
+              id: b.id as string,
+              name: b.name as string,
+              category: (
+                b.category === "stocks/options" || b.category === "all"
+                  ? "stocks"
+                  : b.category
+              ) as Broker["category"],
+              description: b.description as string,
+              icon: categoryToIcon[(b.category as string) || ""] || "monitor",
+              // localStorage status takes precedence (survives page refresh)
+              status: (savedConnections[b.id as string] as Broker["status"]) ||
+                (b.status as Broker["status"]) || "disconnected",
+              comingSoon: (b.comingSoon as boolean) || false,
+              requiredCredentials:
+                (b.requiredCredentials as Broker["requiredCredentials"]) || [],
+            })
+          );
+          setBrokers(mapped);
         }
       })
       .catch(() => {
-        // Use defaults on error
+        // Use defaults but still apply localStorage connections
+        if (Object.keys(savedConnections).length > 0) {
+          setBrokers((prev) =>
+            prev.map((b) => ({
+              ...b,
+              status: (savedConnections[b.id] as Broker["status"]) || b.status,
+            }))
+          );
+        }
       });
   }, []);
 
-  // Load controls from API
+  // Load controls — localStorage wins for persistence across refreshes
   useEffect(() => {
+    // Try localStorage first
+    try {
+      const raw = localStorage.getItem("aifred_trading_controls");
+      if (raw) {
+        const saved = JSON.parse(raw);
+        setControls((prev) => ({ ...prev, ...saved }));
+        return; // Use saved state, don't overwrite with API defaults
+      }
+    } catch { /* ignore */ }
+
+    // Fall back to API
     fetch("/api/trading/controls")
       .then((r) => r.json())
       .then((data) => {
         if (data && data.mode) {
-          setControls(data);
+          const assetSymbols: string[] = Array.isArray(data.assets) ? data.assets : [];
+          const apiSet = new Set(assetSymbols);
+          const mergedAssets = DEFAULT_CONTROLS.assets.map((a) => ({
+            ...a,
+            enabled: apiSet.has(a.symbol) ? true : a.enabled,
+          }));
+          for (const sym of assetSymbols) {
+            if (!mergedAssets.find((a) => a.symbol === sym)) {
+              const isForex = sym.includes("/") && !sym.includes("USDT") &&
+                !["BTC","ETH","SOL","DOGE","ADA","XRP","DOT","AVAX","MATIC","LINK","BNB"].some((c) => sym.startsWith(c));
+              const isCrypto = sym.includes("USDT") || sym.includes("BTC") || sym.includes("ETH");
+              mergedAssets.push({ symbol: sym, category: isForex ? "forex" : isCrypto ? "crypto" : "stocks", enabled: true });
+            }
+          }
+          setControls({
+            mode: data.mode,
+            scanInterval: data.scanInterval ?? DEFAULT_CONTROLS.scanInterval,
+            isRunning: data.running ?? false,
+            assets: mergedAssets,
+          });
         }
       })
       .catch(() => {
-        // Use defaults on error
+        // Use defaults
       });
   }, []);
 
@@ -292,7 +364,7 @@ export default function TradingSettings() {
     if (!selectedBroker) return;
     setSaving(true);
     try {
-      await fetch("/api/trading/brokers", {
+      const res = await fetch("/api/trading/brokers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -300,11 +372,22 @@ export default function TradingSettings() {
           credentials,
         }),
       });
-      setBrokers((prev) =>
-        prev.map((b) =>
-          b.id === selectedBroker.id ? { ...b, status: "connected" as const } : b
-        )
-      );
+      const data = await res.json();
+      if (data.success) {
+        // Update local broker status immediately
+        setBrokers((prev) =>
+          prev.map((b) =>
+            b.id === selectedBroker.id ? { ...b, status: "connected" as const } : b
+          )
+        );
+        // Persist to localStorage so connection survives page refresh
+        try {
+          const raw = localStorage.getItem("aifred_broker_connections");
+          const saved: Record<string, string> = raw ? JSON.parse(raw) : {};
+          saved[selectedBroker.id] = "connected";
+          localStorage.setItem("aifred_broker_connections", JSON.stringify(saved));
+        } catch { /* ignore */ }
+      }
       setSelectedBroker(null);
       setCredentials({});
       setTestResult(null);
@@ -319,15 +402,64 @@ export default function TradingSettings() {
     async (updates: Partial<TradingControls>) => {
       const newControls = { ...controls, ...updates };
       setControls(newControls);
+
+      // Determine the correct API action
+      let action: "start" | "stop" | "toggle_mode" | null = null;
+      let extraPayload: Record<string, unknown> = {};
+
+      if (updates.isRunning !== undefined && updates.isRunning !== controls.isRunning) {
+        action = updates.isRunning ? "start" : "stop";
+      } else if (updates.mode !== undefined && updates.mode !== controls.mode) {
+        action = "toggle_mode";
+        extraPayload.mode = updates.mode;
+      }
+
+      // For asset or scanInterval changes without a start/stop/mode action,
+      // we still need to call the API. Use a start/stop to persist.
+      if (!action && (updates.assets !== undefined || updates.scanInterval !== undefined)) {
+        // Persist via a toggle that matches current state
+        action = newControls.isRunning ? "start" : "stop";
+      }
+
+      if (!action) return;
+
       try {
-        await fetch("/api/trading/controls", {
+        const enabledSymbols = newControls.assets
+          .filter((a) => a.enabled)
+          .map((a) => a.symbol);
+
+        const res = await fetch("/api/trading/controls", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newControls),
+          body: JSON.stringify({
+            action,
+            scanInterval: newControls.scanInterval,
+            assets: enabledSymbols,
+            ...extraPayload,
+          }),
         });
+        const data = await res.json();
+        if (data.currentState) {
+          // Update local state from API response to stay in sync
+          setControls((prev) => ({
+            ...prev,
+            mode: data.currentState.mode ?? prev.mode,
+            isRunning: data.currentState.running ?? prev.isRunning,
+            scanInterval: data.currentState.scanInterval ?? prev.scanInterval,
+          }));
+        }
       } catch {
-        // Silently handle
+        // API failed — that's ok, state is already saved locally
       }
+      // Always persist to localStorage (survives page refresh regardless of API)
+      try {
+        localStorage.setItem("aifred_trading_controls", JSON.stringify({
+          mode: newControls.mode,
+          isRunning: newControls.isRunning,
+          scanInterval: newControls.scanInterval,
+          assets: newControls.assets,
+        }));
+      } catch { /* ignore */ }
     },
     [controls]
   );

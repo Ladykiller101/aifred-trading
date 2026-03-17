@@ -5,6 +5,44 @@ import { join } from "path";
 export const dynamic = "force-dynamic";
 
 // ---------------------------------------------------------------------------
+// Activity log helper
+// ---------------------------------------------------------------------------
+
+// Activity log paths — try /tmp first, fall back to data/ for reads
+const ACTIVITY_PATH_TMP = join("/tmp/aifred-data", "activity-log.json");
+const ACTIVITY_PATH_DATA = join(process.cwd(), "data", "activity-log.json");
+
+function appendActivity(entry: {
+  type: string;
+  severity: string;
+  title: string;
+  message: string;
+  details?: Record<string, unknown>;
+}) {
+  try {
+    if (!existsSync("/tmp/aifred-data")) mkdirSync("/tmp/aifred-data", { recursive: true });
+    let activities: unknown[] = [];
+    for (const p of [ACTIVITY_PATH_TMP, ACTIVITY_PATH_DATA]) {
+      if (existsSync(p)) {
+        try {
+          const raw = JSON.parse(readFileSync(p, "utf-8"));
+          if (Array.isArray(raw)) { activities = raw; break; }
+        } catch { /* ignore */ }
+      }
+    }
+    activities.push({
+      id: `act_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: new Date().toISOString(),
+      ...entry,
+    });
+    if (activities.length > 500) activities = activities.slice(-500);
+    writeFileSync(ACTIVITY_PATH_TMP, JSON.stringify(activities, null, 2), "utf-8");
+  } catch (e) {
+    console.error("Failed to log activity from brokers route:", e);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Broker registry — static definitions of supported brokers
 // ---------------------------------------------------------------------------
 
@@ -159,13 +197,15 @@ const BROKER_REGISTRY: BrokerDefinition[] = [
 // File helpers
 // ---------------------------------------------------------------------------
 
+const TMP_DIR = "/tmp/aifred-data";
 const DATA_DIR = join(process.cwd(), "data");
-const CONNECTIONS_PATH = join(DATA_DIR, "broker-connections.json");
-const SECRETS_PATH = join(DATA_DIR, ".broker-secrets.json");
+const CONNECTIONS_PATH_TMP = join(TMP_DIR, "broker-connections.json");
+const CONNECTIONS_PATH_DATA = join(DATA_DIR, "broker-connections.json");
+const SECRETS_PATH_TMP = join(TMP_DIR, ".broker-secrets.json");
 
-function ensureDataDir() {
-  if (!existsSync(DATA_DIR)) {
-    mkdirSync(DATA_DIR, { recursive: true });
+function ensureTmpDir() {
+  if (!existsSync(TMP_DIR)) {
+    mkdirSync(TMP_DIR, { recursive: true });
   }
 }
 
@@ -178,31 +218,34 @@ interface ConnectionRecord {
 }
 
 function readConnections(): Record<string, ConnectionRecord> {
-  if (!existsSync(CONNECTIONS_PATH)) return {};
-  try {
-    return JSON.parse(readFileSync(CONNECTIONS_PATH, "utf-8"));
-  } catch {
-    return {};
+  // Try /tmp first (latest), then data/ (build-time seed)
+  for (const p of [CONNECTIONS_PATH_TMP, CONNECTIONS_PATH_DATA]) {
+    if (existsSync(p)) {
+      try {
+        return JSON.parse(readFileSync(p, "utf-8"));
+      } catch { /* ignore */ }
+    }
   }
+  return {};
 }
 
 function writeConnections(data: Record<string, ConnectionRecord>) {
-  ensureDataDir();
-  writeFileSync(CONNECTIONS_PATH, JSON.stringify(data, null, 2), "utf-8");
+  ensureTmpDir();
+  writeFileSync(CONNECTIONS_PATH_TMP, JSON.stringify(data, null, 2), "utf-8");
 }
 
 function readSecrets(): Record<string, Record<string, string>> {
-  if (!existsSync(SECRETS_PATH)) return {};
+  if (!existsSync(SECRETS_PATH_TMP)) return {};
   try {
-    return JSON.parse(readFileSync(SECRETS_PATH, "utf-8"));
+    return JSON.parse(readFileSync(SECRETS_PATH_TMP, "utf-8"));
   } catch {
     return {};
   }
 }
 
 function writeSecrets(data: Record<string, Record<string, string>>) {
-  ensureDataDir();
-  writeFileSync(SECRETS_PATH, JSON.stringify(data, null, 2), "utf-8");
+  ensureTmpDir();
+  writeFileSync(SECRETS_PATH_TMP, JSON.stringify(data, null, 2), "utf-8");
 }
 
 // ---------------------------------------------------------------------------
@@ -300,6 +343,15 @@ export async function POST(request: NextRequest) {
       accountId: `${brokerId}_${Date.now().toString(36)}`,
     };
     writeConnections(connections);
+
+    // Log activity
+    appendActivity({
+      type: "broker_connected",
+      severity: "success",
+      title: `Broker Connected: ${broker.name}`,
+      message: `${broker.name} credentials saved and connection established. Account ID: ${connections[brokerId].accountId}.`,
+      details: { broker: broker.name, asset: broker.supportedAssets.join(", ") },
+    });
 
     return NextResponse.json({
       success: true,
