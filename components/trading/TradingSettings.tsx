@@ -296,21 +296,36 @@ export default function TradingSettings() {
 
   // Load controls — localStorage wins for persistence across refreshes
   useEffect(() => {
-    // Try localStorage first
+    // Always start with DEFAULT_CONTROLS as safe base, then overlay localStorage, then don't fetch API
+    let savedFromStorage: Partial<TradingControls> | null = null;
     try {
       const raw = localStorage.getItem("aifred_trading_controls");
       if (raw) {
-        const saved = JSON.parse(raw);
-        setControls((prev) => ({ ...prev, ...saved }));
-        return; // Use saved state, don't overwrite with API defaults
+        const parsed = JSON.parse(raw);
+        // Validate assets is a proper array of objects (guard against corruption)
+        const assets = Array.isArray(parsed.assets) && parsed.assets.length > 0 && typeof parsed.assets[0] === "object"
+          ? parsed.assets as TradingControls["assets"]
+          : DEFAULT_CONTROLS.assets;
+        savedFromStorage = { ...parsed, assets };
       }
     } catch { /* ignore */ }
 
-    // Fall back to API
+    if (savedFromStorage) {
+      // Merge with DEFAULT_CONTROLS so all fields are always defined
+      setControls({
+        ...DEFAULT_CONTROLS,
+        ...savedFromStorage,
+      });
+      return; // localStorage is the source of truth — skip API to avoid overwrite
+    }
+
+    // No localStorage — fetch from API to get server-side state
     fetch("/api/trading/controls")
       .then((r) => r.json())
       .then((data) => {
         if (data && data.mode) {
+          // API returns { mode, running, scanInterval, assets: string[] }
+          // Reconstruct assets as objects using DEFAULT_CONTROLS as base
           const assetSymbols: string[] = Array.isArray(data.assets) ? data.assets : [];
           const apiSet = new Set(assetSymbols);
           const mergedAssets = DEFAULT_CONTROLS.assets.map((a) => ({
@@ -327,14 +342,15 @@ export default function TradingSettings() {
           }
           setControls({
             mode: data.mode,
-            scanInterval: data.scanInterval ?? DEFAULT_CONTROLS.scanInterval,
+            // Normalize scanInterval: API uses 300 (5 min) as default, frontend uses 30s
+            scanInterval: data.scanInterval === 300 ? DEFAULT_CONTROLS.scanInterval : (data.scanInterval ?? DEFAULT_CONTROLS.scanInterval),
             isRunning: data.running ?? false,
             assets: mergedAssets,
           });
         }
       })
       .catch(() => {
-        // Use defaults
+        // Use DEFAULT_CONTROLS already set as initial state
       });
   }, []);
 

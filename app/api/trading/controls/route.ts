@@ -65,7 +65,7 @@ const CONTROLS_PATH_DATA = join(DATA_DIR, "trading-controls.json");
 const DEFAULT_STATE: TradingControlsState = {
   mode: "paper",
   running: false,
-  scanInterval: 300, // 5 minutes
+  scanInterval: 30, // seconds (frontend default; previously 300 caused mismatch)
   assets: ["BTC/USDT", "ETH/USDT", "SOL/USDT"],
   lastScan: null,
 };
