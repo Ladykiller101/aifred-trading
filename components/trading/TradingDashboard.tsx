@@ -211,7 +211,7 @@ function ExecuteTradeModal({
   onTradeExecuted,
 }: {
   onClose: () => void;
-  onTradeExecuted: () => void;
+  onTradeExecuted: (result: TradeResult) => void;
 }) {
   const [symbol, setSymbol] = useState("BTC/USDT");
   const [side, setSide] = useState<"LONG" | "SHORT">("LONG");
@@ -238,7 +238,7 @@ function ExecuteTradeModal({
       const data: TradeResult = await res.json();
       if (data.success) {
         setResult(data);
-        onTradeExecuted();
+        onTradeExecuted(data);
       } else {
         setError(data.message || "Trade failed");
       }
@@ -517,7 +517,43 @@ export default function TradingDashboard() {
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [activityRefreshKey, setActivityRefreshKey] = useState(0);
 
-  const handleTradeExecuted = useCallback(() => {
+  const handleTradeExecuted = useCallback((result: TradeResult) => {
+    // Persist trade to localStorage so it survives serverless resets
+    try {
+      const stored: ActivityEntry[] = JSON.parse(
+        localStorage.getItem("aifred_local_trades") || "[]"
+      );
+      const newEntry: ActivityEntry = {
+        id: `local_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        timestamp: new Date().toISOString(),
+        type: "trade_executed",
+        severity: "success",
+        title: `${result.side} ${result.symbol} — Order Filled`,
+        message: `${result.side} ${result.quantity} ${result.symbol} @ ${result.executionPrice?.toFixed(4)} | Strategy: ${result.strategy} | Confidence: ${result.confidence}%`,
+        details: {
+          asset: result.symbol,
+          side: result.side as "LONG" | "SHORT",
+          strategy: result.strategy,
+          confidence: result.confidence,
+          entry_price: result.executionPrice,
+          stop_loss: result.stopLoss,
+          take_profit: result.takeProfit,
+          reasoning: result.reasoning,
+          technical_signals: result.technicalSignals,
+          sentiment_signals: result.sentimentSignals,
+          risk_assessment: result.riskAssessment,
+          broker: result.broker,
+          tier: result.tier,
+        },
+      };
+      stored.unshift(newEntry);
+      localStorage.setItem(
+        "aifred_local_trades",
+        JSON.stringify(stored.slice(0, 100))
+      );
+    } catch { /* localStorage may not be available */ }
+    // Switch to activity tab and force refresh
+    setActiveTab("activity");
     setActivityRefreshKey((k) => k + 1);
   }, []);
 
@@ -760,8 +796,27 @@ function OverviewTab({
     fetch("/api/trading/activity")
       .then((r) => r.json())
       .then((data) => {
-        const list = Array.isArray(data) ? data : (data?.activities ?? []);
-        setRecentActivity(list.slice(0, 5));
+        const serverList = Array.isArray(data) ? data : (data?.activities ?? []);
+        // Merge with localStorage trades for consistency
+        try {
+          const localTrades = JSON.parse(
+            localStorage.getItem("aifred_local_trades") || "[]"
+          );
+          const merged = [...localTrades, ...serverList];
+          const seen = new Set<string>();
+          const deduped = merged.filter((e) => {
+            if (seen.has(e.id)) return false;
+            seen.add(e.id);
+            return true;
+          });
+          deduped.sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
+          setRecentActivity(deduped.slice(0, 5));
+        } catch {
+          setRecentActivity(serverList.slice(0, 5));
+        }
       })
       .catch(() => {});
   }, []);
@@ -1271,15 +1326,52 @@ function ActivityTab() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const mergeWithLocal = (serverList: ActivityEntry[]): ActivityEntry[] => {
+    try {
+      const localTrades: ActivityEntry[] = JSON.parse(
+        localStorage.getItem("aifred_local_trades") || "[]"
+      );
+      // Merge: local trades first, then server entries, deduplicate by id
+      const merged = [...localTrades, ...serverList];
+      const seen = new Set<string>();
+      const deduped = merged.filter((e) => {
+        if (seen.has(e.id)) return false;
+        seen.add(e.id);
+        return true;
+      });
+      // Sort newest first
+      deduped.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+      return deduped;
+    } catch {
+      return serverList;
+    }
+  };
+
   const fetchActivities = () => {
     fetch("/api/trading/activity")
       .then((r) => r.json())
       .then((data) => {
-        const list = Array.isArray(data) ? data : (data?.activities ?? []);
-        setActivities(list);
+        const serverList = Array.isArray(data) ? data : (data?.activities ?? []);
+        const merged = mergeWithLocal(serverList);
+        setActivities(merged);
+        // Auto-expand the newest trade_executed entry
+        const newest = merged.find((e) => e.type === "trade_executed");
+        if (newest) setExpandedId((prev) => prev ?? newest.id);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        // Even on server error, show local trades
+        const local = mergeWithLocal([]);
+        setActivities(local);
+        if (local.length > 0) {
+          const newest = local.find((e) => e.type === "trade_executed");
+          if (newest) setExpandedId((prev) => prev ?? newest.id);
+        }
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -1311,18 +1403,34 @@ function ActivityTab() {
       <div className="card-glass rounded-2xl p-5">
         <h3 className="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
           <Activity className="w-4 h-4 text-zinc-500" />
-          Live Activity Feed
-          <span className="ml-auto flex items-center gap-1.5">
-            <div
-              className="w-1.5 h-1.5 rounded-full bg-emerald-400"
-              style={{ animation: "pulse-glow 2s ease-in-out infinite" }}
-            />
-            <span
-              className="text-[10px] text-emerald-400/70 uppercase tracking-wider"
+          Agent Reasoning Log
+          <span className="text-[11px] text-zinc-600 font-normal">
+            {activities.length} entries
+          </span>
+          <span className="ml-auto flex items-center gap-3">
+            <button
+              onClick={() => {
+                localStorage.removeItem("aifred_local_trades");
+                fetchActivities();
+              }}
+              className="text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors uppercase tracking-wider"
               style={{ fontFamily: "JetBrains Mono, monospace" }}
+              title="Clear locally stored trades"
             >
-              Auto-refresh 10s
-            </span>
+              clear local
+            </button>
+            <div className="flex items-center gap-1.5">
+              <div
+                className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+                style={{ animation: "pulse-glow 2s ease-in-out infinite" }}
+              />
+              <span
+                className="text-[10px] text-emerald-400/70 uppercase tracking-wider"
+                style={{ fontFamily: "JetBrains Mono, monospace" }}
+              >
+                Live · 10s
+              </span>
+            </div>
           </span>
         </h3>
 
@@ -1369,7 +1477,7 @@ function ActivityTab() {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-zinc-200">
                           {entry.title}
                         </span>
@@ -1383,10 +1491,36 @@ function ActivityTab() {
                             {entry.details.tier}
                           </span>
                         )}
+                        {entry.details?.confidence !== undefined && (
+                          <span
+                            className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                              entry.details.confidence >= 85
+                                ? "bg-emerald-500/10 text-emerald-400"
+                                : entry.details.confidence >= 75
+                                ? "bg-amber-500/10 text-amber-400"
+                                : "bg-red-500/10 text-red-400"
+                            }`}
+                            style={{
+                              fontFamily: "JetBrains Mono, monospace",
+                            }}
+                          >
+                            {entry.details.confidence}% conf
+                          </span>
+                        )}
                       </div>
                       <p className="text-[11px] text-zinc-500 mt-0.5 truncate">
                         {entry.message}
                       </p>
+                      {/* Reasoning preview (trade entries only) */}
+                      {!isExpanded && entry.details?.reasoning && (
+                        <p className="text-[10px] text-indigo-400/70 mt-0.5 flex items-center gap-1">
+                          <Brain className="w-2.5 h-2.5 flex-shrink-0" />
+                          <span className="truncate">
+                            {entry.details.reasoning.slice(0, 90)}
+                            {entry.details.reasoning.length > 90 ? "…" : ""}
+                          </span>
+                        </p>
+                      )}
                     </div>
 
                     {/* Time + expand */}
