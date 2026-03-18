@@ -1577,7 +1577,7 @@ function ActivityTab() {
                       {!isExpanded && trade.details?.reasoning && (
                         <p className="text-[10px] text-indigo-400/70 mt-0.5 flex items-center gap-1">
                           <Brain className="w-2.5 h-2.5 flex-shrink-0" />
-                          <span className="truncate">{trade.details.reasoning.slice(0, 90)}{trade.details.reasoning.length > 90 ? "..." : ""}</span>
+                          <span className="truncate">{trade.details?.reasoning?.slice(0, 90)}{(trade.details?.reasoning?.length ?? 0) > 90 ? "..." : ""}</span>
                         </p>
                       )}
                     </div>
@@ -1600,24 +1600,24 @@ function ActivityTab() {
                         <div className="px-4 pb-4 space-y-3">
                           {/* Trade stats grid */}
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px]" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-                            {trade.details.asset && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Asset</div><div className="text-zinc-300">{trade.details.asset}</div></div>}
-                            {trade.details.side && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Side</div><div className={trade.details.side === "LONG" ? "text-emerald-400" : "text-red-400"}>{trade.details.side}</div></div>}
-                            {trade.details.entry_price != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Entry</div><div className="text-zinc-300">${Number(trade.details.entry_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</div></div>}
-                            {trade.details.strategy && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Strategy</div><div className="text-zinc-300">{trade.details.strategy}</div></div>}
-                            {trade.details.stop_loss != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Stop Loss</div><div className="text-red-400">${Number(trade.details.stop_loss).toFixed(2)}</div></div>}
-                            {trade.details.take_profit != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Take Profit</div><div className="text-emerald-400">${Number(trade.details.take_profit).toFixed(2)}</div></div>}
+                            {trade.details?.asset && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Asset</div><div className="text-zinc-300">{trade.details.asset}</div></div>}
+                            {trade.details?.side && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Side</div><div className={trade.details.side === "LONG" ? "text-emerald-400" : "text-red-400"}>{trade.details.side}</div></div>}
+                            {trade.details?.entry_price != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Entry</div><div className="text-zinc-300">${Number(trade.details.entry_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</div></div>}
+                            {trade.details?.strategy && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Strategy</div><div className="text-zinc-300">{trade.details.strategy}</div></div>}
+                            {trade.details?.stop_loss != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Stop Loss</div><div className="text-red-400">${Number(trade.details.stop_loss).toFixed(2)}</div></div>}
+                            {trade.details?.take_profit != null && <div className="bg-white/[0.03] rounded-lg px-3 py-2"><div className="text-[9px] text-zinc-600 uppercase mb-0.5">Take Profit</div><div className="text-emerald-400">${Number(trade.details.take_profit).toFixed(2)}</div></div>}
                           </div>
                           {/* Reasoning sections */}
-                          {trade.details.reasoning && (
+                          {trade.details?.reasoning && (
                             <div className="card-glass rounded-xl p-4"><div className="text-[10px] text-indigo-400 uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}><Brain className="w-3 h-3" /> AI Reasoning</div><p className="text-xs text-zinc-400 leading-relaxed">{trade.details.reasoning}</p></div>
                           )}
-                          {trade.details.technical_signals && (
+                          {trade.details?.technical_signals && (
                             <div className="card-glass rounded-xl p-4"><div className="text-[10px] text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}><BarChart3 className="w-3 h-3" /> Technical Signals</div><p className="text-xs text-zinc-400 leading-relaxed">{trade.details.technical_signals}</p></div>
                           )}
-                          {trade.details.sentiment_signals && (
+                          {trade.details?.sentiment_signals && (
                             <div className="card-glass rounded-xl p-4"><div className="text-[10px] text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}><Zap className="w-3 h-3" /> Sentiment</div><p className="text-xs text-zinc-400 leading-relaxed">{trade.details.sentiment_signals}</p></div>
                           )}
-                          {trade.details.risk_assessment && (
+                          {trade.details?.risk_assessment && (
                             <div className="card-glass rounded-xl p-4"><div className="text-[10px] text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5" style={{ fontFamily: "JetBrains Mono, monospace" }}><Shield className="w-3 h-3" /> Risk</div><p className="text-xs text-zinc-400 leading-relaxed">{trade.details.risk_assessment}</p></div>
                           )}
                         </div>
@@ -1748,8 +1748,8 @@ function ActivityTab() {
                         <p className="text-[10px] text-indigo-400/70 mt-0.5 flex items-center gap-1">
                           <Brain className="w-2.5 h-2.5 flex-shrink-0" />
                           <span className="truncate">
-                            {entry.details.reasoning.slice(0, 90)}
-                            {entry.details.reasoning.length > 90 ? "…" : ""}
+                            {entry.details?.reasoning?.slice(0, 90)}
+                            {(entry.details?.reasoning?.length ?? 0) > 90 ? "…" : ""}
                           </span>
                         </p>
                       )}
@@ -2369,7 +2369,7 @@ function TradeRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
-  const pnl = trade.pnl as number;
+  const pnl = Number(trade.pnl ?? 0);
   const isWin = pnl > 0;
 
   return (
@@ -2399,7 +2399,7 @@ function TradeRow({
           className="text-[11px] text-zinc-400 text-right"
           style={{ fontFamily: "JetBrains Mono, monospace" }}
         >
-          {Number(trade.entry_price).toLocaleString(undefined, {
+          {Number(trade.entry_price ?? 0).toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}
@@ -2417,7 +2417,7 @@ function TradeRow({
           className="text-[11px] text-zinc-500 text-right"
           style={{ fontFamily: "JetBrains Mono, monospace" }}
         >
-          {Number(trade.confidence).toFixed(0)}%
+          {Number(trade.confidence ?? 0).toFixed(0)}%
         </span>
         <span className="text-zinc-600 flex justify-end">
           {expanded ? (
@@ -2472,10 +2472,10 @@ function TradeRow({
                   TIER: {(trade.tier as string) || "—"}
                 </span>
                 <span>
-                  STOP: {Number(trade.stop_loss).toFixed(2)}
+                  STOP: {Number(trade.stop_loss ?? 0).toFixed(2)}
                 </span>
                 <span>
-                  TP: {Number(trade.take_profit).toFixed(2)}
+                  TP: {Number(trade.take_profit ?? 0).toFixed(2)}
                 </span>
                 <span>
                   FEES: ${Number(trade.fees || 0).toFixed(2)}
@@ -2517,13 +2517,13 @@ function OpenPositionRow({ trade }: { trade: Record<string, unknown> }) {
         style={{ fontFamily: "JetBrains Mono, monospace" }}
       >
         <span className="text-zinc-500">
-          Entry: {Number(trade.entry_price).toFixed(2)}
+          Entry: {Number(trade.entry_price ?? 0).toFixed(2)}
         </span>
         <span className="text-zinc-500">
-          Conf: {Number(trade.confidence).toFixed(0)}%
+          Conf: {Number(trade.confidence ?? 0).toFixed(0)}%
         </span>
         <span className="text-zinc-500">
-          SL: {Number(trade.stop_loss).toFixed(2)}
+          SL: {Number(trade.stop_loss ?? 0).toFixed(2)}
         </span>
       </div>
     </div>
