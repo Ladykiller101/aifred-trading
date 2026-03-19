@@ -238,9 +238,14 @@ const INJECTED_STYLES = `
 
 // ─── Available symbols ───────────────────────────────────────
 const AVAILABLE_SYMBOLS = [
+  // Coinbase USD pairs (recommended for Coinbase)
+  "BTC/USD", "ETH/USD", "SOL/USD", "DOGE/USD", "XRP/USD", "ADA/USD", "AVAX/USD",
+  // Binance USDT pairs
   "BTC/USDT", "ETH/USDT", "SOL/USDT", "BNB/USDT", "XRP/USDT",
   "ADA/USDT", "DOGE/USDT", "AVAX/USDT",
+  // Forex
   "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CAD",
+  // Stocks
   "AAPL", "MSFT", "TSLA", "NVDA", "GOOGL", "AMZN", "META",
 ];
 
