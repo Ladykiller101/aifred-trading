@@ -197,12 +197,16 @@ async function executeLiveTrade(
   quantity: number,
   orderType: "market" | "limit",
   limitPrice?: number,
+  providedCredentials?: Record<string, string>,
 ): Promise<LiveTradeResult> {
-  // 1. Read and validate credentials
-  const secrets = readBrokerSecrets();
-  const creds = secrets[brokerId];
+  // 1. Use provided credentials first (from client localStorage), fall back to /tmp
+  let creds = providedCredentials;
   if (!creds) {
-    throw new Error(`No credentials found for broker "${brokerId}". Please connect the broker first.`);
+    const secrets = readBrokerSecrets();
+    creds = secrets[brokerId];
+  }
+  if (!creds) {
+    throw new Error(`No credentials provided for broker "${brokerId}". Please reconnect the broker in Settings.`);
   }
 
   // 2. Resolve exchange class
@@ -362,7 +366,7 @@ function regimeLabel(regime: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { symbol, side, quantity, orderType, brokerId, price, forceExecution, mode: requestedMode, limitPrice } = body as {
+    const { symbol, side, quantity, orderType, brokerId, price, forceExecution, mode: requestedMode, limitPrice, credentials: bodyCredentials } = body as {
       symbol: string;
       side: "LONG" | "SHORT";
       quantity: number;
@@ -372,6 +376,7 @@ export async function POST(request: NextRequest) {
       forceExecution?: boolean;
       mode?: "live" | "paper";
       limitPrice?: number;
+      credentials?: Record<string, string>;
     };
 
     // Determine execution mode: live only if explicitly requested AND a broker is specified
@@ -546,6 +551,7 @@ export async function POST(request: NextRequest) {
           quantity,
           orderType,
           limitPrice ?? price,
+          bodyCredentials,
         );
 
         const executionPrice = liveResult.filledPrice;

@@ -27,6 +27,12 @@ import {
   Unplug,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  saveCredentials as saveCredsToLocal,
+  loadAllCredentials,
+  removeCredentials as removeCredsFromLocal,
+  isConnected as isLocalConnected,
+} from "@/lib/credential-store";
 
 // ─── Types ────────────────────────────────────────────────────
 interface Broker {
@@ -239,65 +245,37 @@ export default function TradingSettings() {
     };
   }, []);
 
-  // Load brokers — fetch from server with revalidation (server is source of truth)
-  const fetchBrokers = useCallback((revalidate = false) => {
-    const categoryToIcon: Record<string, Broker["icon"]> = {
-      crypto: "coins",
-      stocks: "building",
-      "stocks/options": "building",
-      forex: "globe",
-      all: "monitor",
-    };
+  // Load brokers — use DEFAULT_BROKERS for definitions, localStorage for connection status
+  const fetchBrokers = useCallback(() => {
+    // Enrich default broker definitions with connection status from localStorage
+    const localCreds = loadAllCredentials();
+    const enriched: Broker[] = DEFAULT_BROKERS.map((broker) => ({
+      ...broker,
+      status: isLocalConnected(broker.id) ? ("connected" as const) : ("disconnected" as const),
+      accountInfo: localCreds[broker.id]?.accountInfo
+        ? [
+            { label: "Account ID", value: localCreds[broker.id].accountInfo!.accountId },
+            ...Object.entries(localCreds[broker.id].accountInfo!.balance).map(([k, v]) => ({
+              label: `${k} Balance`,
+              value: String(v),
+            })),
+          ]
+        : undefined,
+    }));
+    setBrokers(enriched);
 
-    const url = revalidate
-      ? "/api/trading/brokers?revalidate=true"
-      : "/api/trading/brokers";
-
-    fetch(url)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data && Array.isArray(data.brokers)) {
-          const mapped: Broker[] = data.brokers.map(
-            (b: Record<string, unknown>) => ({
-              id: b.id as string,
-              name: b.name as string,
-              category: (
-                b.category === "stocks/options" || b.category === "all"
-                  ? "stocks"
-                  : b.category
-              ) as Broker["category"],
-              description: b.description as string,
-              icon: categoryToIcon[(b.category as string) || ""] || "monitor",
-              // Server status is the source of truth
-              status: (b.status as Broker["status"]) || "disconnected",
-              comingSoon: (b.comingSoon as boolean) || false,
-              requiredCredentials:
-                (b.requiredCredentials as Broker["requiredCredentials"]) || [],
-            })
-          );
-          setBrokers(mapped);
-
-          // Sync localStorage with server state
-          try {
-            const connections: Record<string, string> = {};
-            mapped.forEach((b) => {
-              if (b.status === "connected") connections[b.id] = "connected";
-            });
-            localStorage.setItem(
-              "aifred_broker_connections",
-              JSON.stringify(connections),
-            );
-          } catch { /* ignore */ }
-        }
-      })
-      .catch(() => {
-        // Keep defaults on network error
+    // Also sync the legacy aifred_broker_connections key for TradingDashboard compatibility
+    try {
+      const connections: Record<string, string> = {};
+      enriched.forEach((b) => {
+        if (b.status === "connected") connections[b.id] = "connected";
       });
+      localStorage.setItem("aifred_broker_connections", JSON.stringify(connections));
+    } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
-    // On mount: fetch with revalidation to verify stored credentials are still valid
-    fetchBrokers(true);
+    fetchBrokers();
   }, [fetchBrokers]);
 
   // Load controls — localStorage wins for persistence across refreshes
@@ -386,30 +364,28 @@ export default function TradingSettings() {
     if (!selectedBroker) return;
     setSaving(true);
     try {
-      const res = await fetch("/api/trading/brokers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          brokerId: selectedBroker.id,
-          credentials,
-        }),
+      // Save credentials to localStorage (client-side persistence)
+      saveCredsToLocal(selectedBroker.id, credentials, {
+        success: testResult?.success ?? false,
+        balance: testResult?.accountInfo
+          ? Object.fromEntries(testResult.accountInfo.map((a) => [a.label, parseFloat(a.value) || 0]))
+          : undefined,
       });
-      const data = await res.json();
-      if (data.success) {
-        // Update local broker status immediately
-        setBrokers((prev) =>
-          prev.map((b) =>
-            b.id === selectedBroker.id ? { ...b, status: "connected" as const } : b
-          )
-        );
-        // Sync localStorage with new connection
-        try {
-          const raw = localStorage.getItem("aifred_broker_connections");
-          const saved: Record<string, string> = raw ? JSON.parse(raw) : {};
-          saved[selectedBroker.id] = "connected";
-          localStorage.setItem("aifred_broker_connections", JSON.stringify(saved));
-        } catch { /* ignore */ }
-      }
+
+      // Update local broker status immediately
+      setBrokers((prev) =>
+        prev.map((b) =>
+          b.id === selectedBroker.id ? { ...b, status: "connected" as const } : b
+        )
+      );
+      // Sync legacy localStorage key for TradingDashboard compatibility
+      try {
+        const raw = localStorage.getItem("aifred_broker_connections");
+        const saved: Record<string, string> = raw ? JSON.parse(raw) : {};
+        saved[selectedBroker.id] = "connected";
+        localStorage.setItem("aifred_broker_connections", JSON.stringify(saved));
+      } catch { /* ignore */ }
+
       setSelectedBroker(null);
       setCredentials({});
       setTestResult(null);
@@ -418,35 +394,31 @@ export default function TradingSettings() {
     } finally {
       setSaving(false);
     }
-  }, [selectedBroker, credentials]);
+  }, [selectedBroker, credentials, testResult]);
 
   const handleDisconnect = useCallback(
-    async (brokerId: string) => {
+    (brokerId: string) => {
       setDisconnecting(brokerId);
       try {
-        const res = await fetch(
-          `/api/trading/brokers?brokerId=${encodeURIComponent(brokerId)}`,
-          { method: "DELETE" },
+        // Remove credentials from localStorage
+        removeCredsFromLocal(brokerId);
+
+        // Update local broker status
+        setBrokers((prev) =>
+          prev.map((b) =>
+            b.id === brokerId ? { ...b, status: "disconnected" as const } : b,
+          ),
         );
-        const data = await res.json();
-        if (data.success) {
-          // Update local broker status
-          setBrokers((prev) =>
-            prev.map((b) =>
-              b.id === brokerId ? { ...b, status: "disconnected" as const } : b,
-            ),
+        // Clear from legacy localStorage key
+        try {
+          const raw = localStorage.getItem("aifred_broker_connections");
+          const saved: Record<string, string> = raw ? JSON.parse(raw) : {};
+          delete saved[brokerId];
+          localStorage.setItem(
+            "aifred_broker_connections",
+            JSON.stringify(saved),
           );
-          // Clear from localStorage
-          try {
-            const raw = localStorage.getItem("aifred_broker_connections");
-            const saved: Record<string, string> = raw ? JSON.parse(raw) : {};
-            delete saved[brokerId];
-            localStorage.setItem(
-              "aifred_broker_connections",
-              JSON.stringify(saved),
-            );
-          } catch { /* ignore */ }
-        }
+        } catch { /* ignore */ }
       } catch {
         // Silently handle
       } finally {

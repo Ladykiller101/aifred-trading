@@ -41,6 +41,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { loadCredentials } from "@/lib/credential-store";
 
 // ─── Types ────────────────────────────────────────────────────
 interface TradingData {
@@ -293,6 +294,11 @@ function ExecuteTradeModal({
     setExecuting(true);
     setError(null);
     try {
+      // For live trades, send credentials from localStorage so the server can execute
+      const brokerCredentials = tradeMode === "live" && selectedBroker
+        ? loadCredentials(selectedBroker)
+        : undefined;
+
       const res = await fetch("/api/trading/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -303,6 +309,7 @@ function ExecuteTradeModal({
           orderType,
           mode: tradeMode,
           brokerId: tradeMode === "live" ? selectedBroker : undefined,
+          credentials: brokerCredentials || undefined,
         }),
       });
       const data: TradeResult = await res.json();
