@@ -41,7 +41,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { loadCredentials } from "@/lib/credential-store";
+import { loadCredentials, getConnectedBrokerIds } from "@/lib/credential-store";
 
 // ─── Types ────────────────────────────────────────────────────
 interface TradingData {
@@ -134,20 +134,11 @@ function getConnectedBrokers(): ConnectedBrokerInfo[] {
 
   // Source 1: credential store (primary — survives deploys)
   try {
-    const credRaw = localStorage.getItem("aifred_broker_credentials");
-    if (credRaw) {
-      // Deobfuscate
-      const KEY = "AIFr3d-Tr4d1ng-2026";
-      const decoded = atob(credRaw);
-      const text = Array.from(decoded).map((c, i) =>
-        String.fromCharCode(c.charCodeAt(0) ^ KEY.charCodeAt(i % KEY.length))
-      ).join("");
-      const creds = JSON.parse(text);
-      for (const [id, data] of Object.entries(creds as Record<string, any>)) {
-        if (data?.testResult === "success" && !seen.has(id)) {
-          seen.add(id);
-          results.push({ id, name: BROKER_NAMES[id] || id, status: "connected" });
-        }
+    const credIds = getConnectedBrokerIds();
+    for (const id of credIds) {
+      if (!seen.has(id)) {
+        seen.add(id);
+        results.push({ id, name: BROKER_NAMES[id] || id, status: "connected" });
       }
     }
   } catch { /* ignore */ }
