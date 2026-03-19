@@ -445,7 +445,7 @@ async function fetchBinanceKlines(
   interval = "1h",
   limit = 1000
 ): Promise<OHLCVData[]> {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${encodeURIComponent(
+  const url = `https://api.binance.us/api/v3/klines?symbol=${encodeURIComponent(
     symbol
   )}&interval=${interval}&limit=${limit}`;
 

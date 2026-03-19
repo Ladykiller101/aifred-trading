@@ -67,7 +67,7 @@ async function fetchCryptoPrices(symbols: string[]): Promise<Record<string, numb
       .filter(Boolean);
 
     if (binanceSymbols.length > 0) {
-      const url = `https://api.binance.com/api/v3/ticker/price?symbols=${JSON.stringify(binanceSymbols)}`;
+      const url = `https://api.binance.us/api/v3/ticker/price?symbols=${JSON.stringify(binanceSymbols)}`;
       const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
 
       if (res.ok) {

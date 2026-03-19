@@ -62,7 +62,7 @@ async function getLivePrice(symbol: string): Promise<number | null> {
   if (!binSym) return null; // Not a crypto symbol, use mock
 
   try {
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${binSym}`, {
+    const res = await fetch(`https://api.binance.us/api/v3/ticker/price?symbol=${binSym}`, {
       signal: AbortSignal.timeout(3000),
     });
     if (res.ok) {
@@ -80,7 +80,7 @@ async function getLivePrice(symbol: string): Promise<number | null> {
 // Fetch OHLCV klines from Binance for confirmations
 async function fetchKlinesForConfirmations(binanceSymbol: string): Promise<OHLCVCandle[]> {
   try {
-    const url = `https://api.binance.com/api/v3/klines?symbol=${encodeURIComponent(binanceSymbol)}&interval=1h&limit=200`;
+    const url = `https://api.binance.us/api/v3/klines?symbol=${encodeURIComponent(binanceSymbol)}&interval=1h&limit=200`;
     const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
     if (!res.ok) return [];
 

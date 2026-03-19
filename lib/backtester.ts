@@ -81,7 +81,7 @@ export async function fetchBinanceKlines(
   // Binance returns max 1000 candles per request; paginate backward
   while (currentEnd > startTime) {
     const url =
-      `https://api.binance.com/api/v3/klines?symbol=${symbol}` +
+      `https://api.binance.us/api/v3/klines?symbol=${symbol}` +
       `&interval=${interval}&limit=1000&endTime=${currentEnd}`;
 
     const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
