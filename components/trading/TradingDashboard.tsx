@@ -118,29 +118,55 @@ interface ConnectedBrokerInfo {
 
 function getConnectedBrokers(): ConnectedBrokerInfo[] {
   if (typeof window === "undefined") return [];
+  const BROKER_NAMES: Record<string, string> = {
+    alpaca: "Alpaca",
+    binance: "Binance",
+    coinbase: "Coinbase Advanced Trade",
+    kraken: "Kraken",
+    bybit: "Bybit",
+    oanda: "OANDA",
+    interactive_brokers: "Interactive Brokers",
+    metatrader: "MetaTrader 5",
+    bloomberg: "Bloomberg Terminal",
+  };
+  const results: ConnectedBrokerInfo[] = [];
+  const seen = new Set<string>();
+
+  // Source 1: credential store (primary — survives deploys)
+  try {
+    const credRaw = localStorage.getItem("aifred_broker_credentials");
+    if (credRaw) {
+      // Deobfuscate
+      const KEY = "AIFr3d-Tr4d1ng-2026";
+      const decoded = atob(credRaw);
+      const text = Array.from(decoded).map((c, i) =>
+        String.fromCharCode(c.charCodeAt(0) ^ KEY.charCodeAt(i % KEY.length))
+      ).join("");
+      const creds = JSON.parse(text);
+      for (const [id, data] of Object.entries(creds as Record<string, any>)) {
+        if (data?.testResult === "success" && !seen.has(id)) {
+          seen.add(id);
+          results.push({ id, name: BROKER_NAMES[id] || id, status: "connected" });
+        }
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Source 2: legacy broker connections (backward compat)
   try {
     const raw = localStorage.getItem("aifred_broker_connections");
-    if (!raw) return [];
-    const connections: Record<string, { connected?: boolean; status?: string }> = JSON.parse(raw);
-    const BROKER_NAMES: Record<string, string> = {
-      alpaca: "Alpaca",
-      binance: "Binance",
-      coinbase: "Coinbase",
-      oanda: "OANDA",
-      interactive_brokers: "Interactive Brokers",
-      metatrader: "MetaTrader 5",
-      bloomberg: "Bloomberg Terminal",
-    };
-    return Object.entries(connections)
-      .filter(([, v]) => v.connected || v.status === "connected")
-      .map(([id, v]) => ({
-        id,
-        name: BROKER_NAMES[id] || id,
-        status: (v.status as ConnectedBrokerInfo["status"]) || "connected",
-      }));
-  } catch {
-    return [];
-  }
+    if (raw) {
+      const connections: Record<string, { connected?: boolean; status?: string }> = JSON.parse(raw);
+      for (const [id, v] of Object.entries(connections)) {
+        if ((v.connected || v.status === "connected") && !seen.has(id)) {
+          seen.add(id);
+          results.push({ id, name: BROKER_NAMES[id] || id, status: "connected" });
+        }
+      }
+    }
+  } catch { /* ignore */ }
+
+  return results;
 }
 
 /** Determine the trade mode from an activity entry (backward compat) */
@@ -271,7 +297,14 @@ function ExecuteTradeModal({
   const [countdown, setCountdown] = useState(8);
   const [tradeMode, setTradeMode] = useState<"paper" | "live">("paper");
   const [selectedBroker, setSelectedBroker] = useState<string>("");
-  const [connectedBrokers] = useState<ConnectedBrokerInfo[]>(() => getConnectedBrokers());
+  const [connectedBrokers, setConnectedBrokers] = useState<ConnectedBrokerInfo[]>(() => getConnectedBrokers());
+
+  // Refresh connected brokers every time the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setConnectedBrokers(getConnectedBrokers());
+    }
+  }, [isOpen]);
 
   // Auto-close 8 seconds after result appears
   useEffect(() => {
