@@ -229,6 +229,11 @@ async function executeLiveTrade(
     password: creds.passphrase || creds.password,
     enableRateLimit: true,
     timeout: 15000,
+    // Coinbase requires price for market buy orders — disable this requirement
+    // and pass quantity as the amount of base currency to buy
+    options: {
+      createMarketBuyOrderRequiresPrice: false,
+    },
   });
 
   // 4. Place order
@@ -237,7 +242,28 @@ async function executeLiveTrade(
 
   try {
     if (orderType === "market") {
-      order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+      if (side === "buy" && (exchangeId === "coinbase" || exchangeId === "coinbasepro")) {
+        // Coinbase market buys: pass cost in quote currency (e.g., $10 worth of BTC)
+        // Fetch current price to calculate cost
+        let price = limitPrice;
+        if (!price) {
+          try {
+            const ticker = await exchange.fetchTicker(normalizedSymbol);
+            price = ticker.last || ticker.close || 0;
+          } catch {
+            price = 0;
+          }
+        }
+        if (price && price > 0) {
+          const cost = quantity * price;
+          order = await exchange.createOrder(normalizedSymbol, "market", side, cost);
+        } else {
+          // Fallback: set createMarketBuyOrderRequiresPrice to false already set
+          order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+        }
+      } else {
+        order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+      }
     } else {
       if (!limitPrice) {
         throw new Error("Limit price is required for limit orders");
