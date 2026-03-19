@@ -4,6 +4,7 @@ import { join } from "path";
 import { loadStats, selectStrategy, computeConfidence, recordTradeOutcome } from "@/lib/strategy-learning";
 import { detectRegime, MarketRegime, getRegimeAction } from "@/lib/hmm-regime";
 import { calculateConfirmations, type OHLCVCandle } from "@/lib/technical-indicators";
+import ccxt, { type Order } from "ccxt";
 
 export const dynamic = "force-dynamic";
 
@@ -132,6 +133,149 @@ const MOCK_PRICES: Record<string, number> = {
 };
 
 // ---------------------------------------------------------------------------
+// Live trade execution via ccxt
+// ---------------------------------------------------------------------------
+
+const SECRETS_PATH = join("/tmp/aifred-data", ".broker-secrets.json");
+const CONNECTIONS_PATH = join("/tmp/aifred-data", "broker-connections.json");
+
+// Map broker IDs to ccxt exchange identifiers
+const EXCHANGE_MAP: Record<string, string> = {
+  binance: "binance",
+  coinbase: "coinbase",
+  kraken: "kraken",
+  bybit: "bybit",
+};
+
+/** Normalize symbol format: "BTCUSDT" -> "BTC/USDT", pass through if already has "/" */
+function normalizeSymbol(raw: string): string {
+  if (raw.includes("/")) return raw;
+  // Common quote currencies, longest first to match correctly
+  const quotes = ["USDT", "BUSD", "USDC", "USD", "EUR", "BTC", "ETH", "BNB"];
+  for (const q of quotes) {
+    if (raw.endsWith(q) && raw.length > q.length) {
+      return `${raw.slice(0, -q.length)}/${q}`;
+    }
+  }
+  return raw; // Can't parse, return as-is
+}
+
+interface LiveTradeResult {
+  success: boolean;
+  orderId: string;
+  status: string;
+  filledPrice: number;
+  filledQuantity: number;
+  fee: { cost: number; currency: string };
+  raw: unknown;
+}
+
+function readBrokerSecrets(): Record<string, Record<string, string>> {
+  if (!existsSync(SECRETS_PATH)) return {};
+  try {
+    return JSON.parse(readFileSync(SECRETS_PATH, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function readBrokerConnections(): Record<string, { connected: boolean; status: string }> {
+  for (const p of [CONNECTIONS_PATH, join(process.cwd(), "data", "broker-connections.json")]) {
+    if (existsSync(p)) {
+      try {
+        return JSON.parse(readFileSync(p, "utf-8"));
+      } catch { /* ignore */ }
+    }
+  }
+  return {};
+}
+
+async function executeLiveTrade(
+  brokerId: string,
+  symbol: string,
+  side: "buy" | "sell",
+  quantity: number,
+  orderType: "market" | "limit",
+  limitPrice?: number,
+): Promise<LiveTradeResult> {
+  // 1. Read and validate credentials
+  const secrets = readBrokerSecrets();
+  const creds = secrets[brokerId];
+  if (!creds) {
+    throw new Error(`No credentials found for broker "${brokerId}". Please connect the broker first.`);
+  }
+
+  // 2. Resolve exchange class
+  const exchangeId = EXCHANGE_MAP[brokerId];
+  if (!exchangeId) {
+    throw new Error(
+      `Live trading is not supported for "${brokerId}". Supported: ${Object.keys(EXCHANGE_MAP).join(", ")}`,
+    );
+  }
+
+  const ExchangeClass = (ccxt as Record<string, any>)[exchangeId];
+  if (!ExchangeClass) {
+    throw new Error(`ccxt does not have exchange "${exchangeId}"`);
+  }
+
+  // 3. Create exchange instance
+  const exchange = new ExchangeClass({
+    apiKey: creds.api_key || creds.apiKey,
+    secret: creds.api_secret || creds.secret,
+    password: creds.passphrase || creds.password,
+    enableRateLimit: true,
+    timeout: 15000,
+  });
+
+  // 4. Place order
+  let order: Order;
+  const normalizedSymbol = normalizeSymbol(symbol);
+
+  try {
+    if (orderType === "market") {
+      order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+    } else {
+      if (!limitPrice) {
+        throw new Error("Limit price is required for limit orders");
+      }
+      order = await exchange.createOrder(normalizedSymbol, "limit", side, quantity, limitPrice);
+    }
+  } catch (err: unknown) {
+    // Re-throw with more context for specific ccxt error types
+    if (err instanceof ccxt.InsufficientFunds) {
+      throw new Error(`Insufficient balance on ${brokerId} to ${side} ${quantity} ${normalizedSymbol}`);
+    }
+    if (err instanceof ccxt.InvalidOrder) {
+      throw new Error(`Invalid order rejected by ${brokerId}: ${(err as Error).message}`);
+    }
+    if (err instanceof ccxt.AuthenticationError) {
+      throw new Error(`Authentication failed for ${brokerId}. Please re-check your API credentials.`);
+    }
+    if (err instanceof ccxt.PermissionDenied) {
+      throw new Error(`Permission denied on ${brokerId}. Ensure your API key has trading permissions.`);
+    }
+    if (err instanceof ccxt.RateLimitExceeded) {
+      throw new Error(`Rate limit exceeded on ${brokerId}. Please wait and try again.`);
+    }
+    if (err instanceof ccxt.NetworkError) {
+      throw new Error(`Network error connecting to ${brokerId}. Please check connectivity and try again.`);
+    }
+    throw err;
+  }
+
+  // 5. Return normalized result
+  return {
+    success: true,
+    orderId: order.id,
+    status: order.status ?? "unknown",
+    filledPrice: order.average ?? order.price ?? 0,
+    filledQuantity: order.filled ?? quantity,
+    fee: order.fee ?? { cost: 0, currency: "USDT" },
+    raw: order.info,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Risk assessment helpers
 // ---------------------------------------------------------------------------
 
@@ -218,7 +362,7 @@ function regimeLabel(regime: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { symbol, side, quantity, orderType, brokerId, price, forceExecution } = body as {
+    const { symbol, side, quantity, orderType, brokerId, price, forceExecution, mode: requestedMode, limitPrice } = body as {
       symbol: string;
       side: "LONG" | "SHORT";
       quantity: number;
@@ -226,7 +370,12 @@ export async function POST(request: NextRequest) {
       brokerId?: string;
       price?: number;
       forceExecution?: boolean;
+      mode?: "live" | "paper";
+      limitPrice?: number;
     };
+
+    // Determine execution mode: live only if explicitly requested AND a broker is specified
+    const mode: "live" | "paper" = (requestedMode === "live" && brokerId) ? "live" : "paper";
 
     if (!symbol || !side || !quantity) {
       return NextResponse.json(
@@ -364,8 +513,148 @@ export async function POST(request: NextRequest) {
     }
 
     // -----------------------------------------------------------------------
-    // Step 4: Execute trade (existing logic preserved)
+    // Step 4: Execute trade — LIVE or PAPER
     // -----------------------------------------------------------------------
+
+    // Strategy selection (learning-based: weighted by historical win rate)
+    const strategyStats = loadStats();
+    const strategy = selectStrategy(strategyStats);
+    const confidence = computeConfidence(strategyStats, strategy);
+    const riskResult = assessRisk(regimeCurrent, regimeData.confidence, confirmationData.passed, confirmationData.required, side);
+
+    // Broker info for response
+    const brokerConnections = readBrokerConnections();
+    const brokerInfo = brokerId
+      ? {
+          id: brokerId,
+          name: brokerId.charAt(0).toUpperCase() + brokerId.slice(1),
+          connected: brokerConnections[brokerId]?.connected ?? false,
+        }
+      : { id: "paper", name: "Paper Trading", connected: false };
+
+    // ===========================================================================
+    // LIVE EXECUTION PATH
+    // ===========================================================================
+    if (mode === "live") {
+      const ccxtSide: "buy" | "sell" = side === "LONG" ? "buy" : "sell";
+
+      try {
+        const liveResult = await executeLiveTrade(
+          brokerId!,
+          symbol,
+          ccxtSide,
+          quantity,
+          orderType,
+          limitPrice ?? price,
+        );
+
+        const executionPrice = liveResult.filledPrice;
+        const stopLoss = side === "LONG" ? executionPrice * 0.985 : executionPrice * 1.015;
+        const takeProfit = side === "LONG" ? executionPrice * 1.025 : executionPrice * 0.975;
+        const riskReward = Math.abs(takeProfit - executionPrice) / Math.abs(executionPrice - stopLoss);
+        const tier = confidence >= 85 ? "A+" : confidence >= 78 ? "A" : confidence >= 70 ? "B" : "C";
+
+        // Log live trade activity
+        appendActivity({
+          type: "live_trade_executed",
+          severity: "success",
+          title: `LIVE ${side} ${symbol} — ${orderType.toUpperCase()} Order ${liveResult.status}`,
+          message: `LIVE ${side} ${quantity} ${symbol} @ ${executionPrice.toFixed(4)} via ${brokerId} | Order ID: ${liveResult.orderId} | Status: ${liveResult.status} | Fee: ${liveResult.fee.cost} ${liveResult.fee.currency}`,
+          details: {
+            mode: "live",
+            asset: symbol,
+            side,
+            strategy,
+            confidence,
+            entry_price: executionPrice,
+            stop_loss: stopLoss,
+            take_profit: takeProfit,
+            broker: brokerId,
+            tier,
+            regime: regimeData,
+            confirmations: confirmationData,
+            riskLevel: riskResult.level,
+            riskFactors: riskResult.factors,
+            warnings,
+            liveOrder: {
+              id: liveResult.orderId,
+              status: liveResult.status,
+              filledPrice: liveResult.filledPrice,
+              filledQuantity: liveResult.filledQuantity,
+              fee: liveResult.fee,
+            },
+          },
+        });
+
+        // Record outcome for strategy learning (use real fill as basis)
+        recordTradeOutcome(strategyStats, strategy, confidence, 0);
+
+        return NextResponse.json({
+          success: true,
+          mode: "live" as const,
+          orderId: liveResult.orderId,
+          symbol: normalizeSymbol(symbol),
+          side,
+          quantity,
+          orderType,
+          executionPrice,
+          stopLoss,
+          takeProfit,
+          riskReward: parseFloat(riskReward.toFixed(2)),
+          broker: brokerInfo,
+          strategy,
+          confidence,
+          tier,
+          reasoning: `LIVE ORDER via ${brokerId}. ${liveResult.status === "closed" ? "Fully filled." : `Status: ${liveResult.status}.`} Fee: ${liveResult.fee.cost} ${liveResult.fee.currency}.`,
+          priceSource: "live" as const,
+          status: liveResult.status === "closed" ? "filled" : liveResult.status,
+          timestamp: new Date().toISOString(),
+          message: `LIVE ${side} ${liveResult.filledQuantity} ${symbol} @ ${executionPrice.toFixed(4)} — Order ${liveResult.status} via ${brokerId}`,
+          regime: regimeData,
+          confirmations: confirmationData,
+          risk: riskResult,
+          warnings,
+          order: {
+            id: liveResult.orderId,
+            status: liveResult.status === "closed" ? "filled" : liveResult.status,
+            filledPrice: liveResult.filledPrice,
+            filledQuantity: liveResult.filledQuantity,
+            fee: liveResult.fee,
+          },
+        });
+      } catch (liveErr: unknown) {
+        const errMsg = liveErr instanceof Error ? liveErr.message : String(liveErr);
+        console.error(`Live trade execution failed for ${brokerId}:`, errMsg);
+
+        appendActivity({
+          type: "live_trade_failed",
+          severity: "error",
+          title: `LIVE ${side} ${symbol} FAILED`,
+          message: `Live order via ${brokerId} failed: ${errMsg}`,
+          details: { mode: "live", broker: brokerId, symbol, side, quantity, error: errMsg },
+        });
+
+        return NextResponse.json(
+          {
+            success: false,
+            mode: "live" as const,
+            message: `Live trade failed: ${errMsg}`,
+            broker: brokerInfo,
+            order: null,
+            regime: regimeData,
+            confirmations: confirmationData,
+            risk: riskResult,
+            warnings,
+            timestamp: new Date().toISOString(),
+          },
+          { status: 502 },
+        );
+      }
+    }
+
+    // ===========================================================================
+    // PAPER EXECUTION PATH (default — preserves all existing logic)
+    // ===========================================================================
 
     // Fetch live price for crypto, fall back to mock
     const livePrice = await getLivePrice(symbol);
@@ -385,11 +674,6 @@ export async function POST(request: NextRequest) {
       : executionPrice * 0.975;
     const riskReward = Math.abs(takeProfit - executionPrice) / Math.abs(executionPrice - stopLoss);
 
-    // Strategy selection (learning-based: weighted by historical win rate)
-    const strategyStats = loadStats();
-    const strategy = selectStrategy(strategyStats);
-    const confidence = computeConfidence(strategyStats, strategy);
-
     const orderId = `ord_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 
     // -----------------------------------------------------------------------
@@ -402,8 +686,6 @@ export async function POST(request: NextRequest) {
     const confirmationContext = confirmationData.details.length > 0
       ? `Technical confirmations: ${confirmationData.passed}/${confirmationData.total} passed (${confirmationData.required} required). ${confirmationData.passed >= confirmationData.required ? "All required confirmations met." : `Missing: ${confirmationData.details.filter((c) => !c.passed).map((c) => c.name).join(", ")}.`}`
       : "Technical confirmations unavailable (non-crypto asset).";
-
-    const riskResult = assessRisk(regimeCurrent, regimeData.confidence, confirmationData.passed, confirmationData.required, side);
 
     const reasoning = [
       `Strategy: ${strategy} selected via adaptive learning (confidence: ${confidence}%).`,
@@ -457,11 +739,12 @@ export async function POST(request: NextRequest) {
     // Step 6: Persist to activity log (enhanced with regime data)
     // -----------------------------------------------------------------------
     appendActivity({
-      type: "trade_executed",
+      type: "paper_trade_executed",
       severity: "success",
-      title: `${side} ${symbol} — ${orderType.toUpperCase()} Order Filled`,
-      message: `${side} ${quantity} ${symbol} @ ${executionPrice.toFixed(4)} via ${brokerId || "paper"} | Strategy: ${strategy} | Confidence: ${confidence}% | Regime: ${regimeLabel(regimeData.current)} (${regimeData.confidence}%)`,
+      title: `PAPER ${side} ${symbol} — ${orderType.toUpperCase()} Order Filled`,
+      message: `PAPER ${side} ${quantity} ${symbol} @ ${executionPrice.toFixed(4)} via ${brokerId || "paper"} | Strategy: ${strategy} | Confidence: ${confidence}% | Regime: ${regimeLabel(regimeData.current)} (${regimeData.confidence}%)`,
       details: {
+        mode: "paper",
         asset: symbol,
         side,
         strategy,
@@ -494,6 +777,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      mode: "paper" as const,
       orderId,
       symbol,
       side,
@@ -503,7 +787,7 @@ export async function POST(request: NextRequest) {
       stopLoss,
       takeProfit,
       riskReward: parseFloat(riskReward.toFixed(2)),
-      broker: brokerId || "paper",
+      broker: brokerInfo,
       strategy,
       confidence,
       tier,
@@ -514,12 +798,13 @@ export async function POST(request: NextRequest) {
       priceSource,
       status: "filled",
       timestamp: new Date().toISOString(),
-      message: `${side} ${quantity} ${symbol} @ ${executionPrice.toFixed(4)} — Order filled (${priceSource} price)`,
-      // --- New regime-aware fields ---
+      message: `PAPER ${side} ${quantity} ${symbol} @ ${executionPrice.toFixed(4)} — Order filled (${priceSource} price)`,
+      // --- Regime-aware fields ---
       regime: regimeData,
       confirmations: confirmationData,
       risk: riskResult,
       warnings,
+      order: null,
     });
   } catch (error) {
     console.error("Trade execution error:", error);

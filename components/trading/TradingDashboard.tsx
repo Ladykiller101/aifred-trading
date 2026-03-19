@@ -104,7 +104,51 @@ interface ActivityEntry {
     risk_assessment?: string;
     broker?: string;
     tier?: string;
+    mode?: "live" | "paper";
   };
+}
+
+// ─── Connected broker type (mirrors TradingSettings) ────────
+interface ConnectedBrokerInfo {
+  id: string;
+  name: string;
+  status: "connected" | "disconnected" | "error";
+}
+
+function getConnectedBrokers(): ConnectedBrokerInfo[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem("aifred_broker_connections");
+    if (!raw) return [];
+    const connections: Record<string, { connected?: boolean; status?: string }> = JSON.parse(raw);
+    const BROKER_NAMES: Record<string, string> = {
+      alpaca: "Alpaca",
+      binance: "Binance",
+      coinbase: "Coinbase",
+      oanda: "OANDA",
+      interactive_brokers: "Interactive Brokers",
+      metatrader: "MetaTrader 5",
+      bloomberg: "Bloomberg Terminal",
+    };
+    return Object.entries(connections)
+      .filter(([, v]) => v.connected || v.status === "connected")
+      .map(([id, v]) => ({
+        id,
+        name: BROKER_NAMES[id] || id,
+        status: (v.status as ConnectedBrokerInfo["status"]) || "connected",
+      }));
+  } catch {
+    return [];
+  }
+}
+
+/** Determine the trade mode from an activity entry (backward compat) */
+function getEntryMode(entry: ActivityEntry): "live" | "paper" {
+  if (entry.details?.mode) return entry.details.mode;
+  if (entry.type === "trade_executed" && entry.details?.broker && entry.details.broker !== "paper") {
+    return "live";
+  }
+  return "paper";
 }
 
 // ─── Utility ─────────────────────────────────────────────────
@@ -197,6 +241,9 @@ interface TradeResult {
   strategy?: string;
   confidence?: number;
   tier?: string;
+  mode?: "live" | "paper";
+  fee?: number;
+  orderStatus?: string;
   reasoning?: string;
   technicalSignals?: string;
   sentimentSignals?: string;
@@ -221,6 +268,9 @@ function ExecuteTradeModal({
   const [result, setResult] = useState<TradeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(8);
+  const [tradeMode, setTradeMode] = useState<"paper" | "live">("paper");
+  const [selectedBroker, setSelectedBroker] = useState<string>("");
+  const [connectedBrokers] = useState<ConnectedBrokerInfo[]>(() => getConnectedBrokers());
 
   // Auto-close 8 seconds after result appears
   useEffect(() => {
@@ -251,12 +301,15 @@ function ExecuteTradeModal({
           side,
           quantity: parseFloat(quantity) || 0.01,
           orderType,
+          mode: tradeMode,
+          brokerId: tradeMode === "live" ? selectedBroker : undefined,
         }),
       });
       const data: TradeResult = await res.json();
       if (data.success) {
-        setResult(data);
-        onTradeExecuted(data);
+        const resultWithMode = { ...data, mode: tradeMode };
+        setResult(resultWithMode);
+        onTradeExecuted(resultWithMode);
       } else {
         setError(data.message || "Trade failed");
       }
@@ -265,7 +318,7 @@ function ExecuteTradeModal({
     } finally {
       setExecuting(false);
     }
-  }, [symbol, side, quantity, orderType, onTradeExecuted]);
+  }, [symbol, side, quantity, orderType, tradeMode, selectedBroker, onTradeExecuted]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -291,7 +344,7 @@ function ExecuteTradeModal({
         {!result ? (
           <div className="p-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                   <ArrowUpDown className="w-4 h-4 text-emerald-400" />
@@ -300,8 +353,8 @@ function ExecuteTradeModal({
                   <h2 className="text-base font-bold text-white" style={{ fontFamily: "Outfit, sans-serif" }}>
                     Execute Trade
                   </h2>
-                  <p className="text-[11px] text-zinc-500 tracking-wider" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-                    PAPER TRADING MODE
+                  <p className="text-[11px] tracking-wider" style={{ fontFamily: "JetBrains Mono, monospace", color: tradeMode === "live" ? "#4ade80" : "#facc15" }}>
+                    {tradeMode === "live" ? "LIVE TRADING" : "PAPER TRADING"}
                   </p>
                 </div>
               </div>
@@ -312,6 +365,76 @@ function ExecuteTradeModal({
                 <X className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Trading Mode Toggle */}
+            <div className="flex items-center gap-2 p-1 rounded-lg border border-zinc-700 mb-3">
+              <button
+                onClick={() => setTradeMode("paper")}
+                className={`flex-1 py-2 px-4 rounded-md text-xs font-semibold transition-all ${
+                  tradeMode === "paper"
+                    ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/50"
+                    : "text-zinc-500 hover:text-zinc-300 border border-transparent"
+                }`}
+                style={{ fontFamily: "JetBrains Mono, monospace" }}
+              >
+                PAPER MODE
+              </button>
+              <button
+                onClick={() => {
+                  setTradeMode("live");
+                  if (!selectedBroker && connectedBrokers.length > 0) {
+                    setSelectedBroker(connectedBrokers[0].id);
+                  }
+                }}
+                className={`flex-1 py-2 px-4 rounded-md text-xs font-semibold transition-all ${
+                  tradeMode === "live"
+                    ? "bg-green-500/20 text-green-400 border border-green-500/50"
+                    : "text-zinc-500 hover:text-zinc-300 border border-transparent"
+                }`}
+                style={{ fontFamily: "JetBrains Mono, monospace" }}
+              >
+                LIVE MODE
+              </button>
+            </div>
+
+            {/* Mode-specific banners */}
+            {tradeMode === "paper" && (
+              <div className="mb-3 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-2">
+                <Eye className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
+                <span className="text-[11px] text-yellow-300/90">Paper Trading — Simulated execution, no real orders placed</span>
+              </div>
+            )}
+            {tradeMode === "live" && connectedBrokers.length > 0 && (
+              <>
+                <div className="mb-3 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                  <span className="text-[11px] text-red-300/90">LIVE TRADING — Real orders will be placed through your connected broker</span>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-[11px] text-zinc-500 tracking-wider mb-1.5 uppercase" style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                    Broker
+                  </label>
+                  <select
+                    value={selectedBroker}
+                    onChange={(e) => setSelectedBroker(e.target.value)}
+                    className="w-full bg-white/[0.04] border border-green-500/20 rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-green-500/40 transition-colors"
+                    style={{ fontFamily: "JetBrains Mono, monospace" }}
+                  >
+                    {connectedBrokers.map((b) => (
+                      <option key={b.id} value={b.id} style={{ background: "#0a0a0f" }}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
+            {tradeMode === "live" && connectedBrokers.length === 0 && (
+              <div className="mb-3 px-3 py-2.5 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center gap-2">
+                <Wifi className="w-3.5 h-3.5 text-zinc-500 flex-shrink-0" />
+                <span className="text-[11px] text-zinc-400">Connect a broker in <strong className="text-zinc-300">Settings</strong> to enable live trading</span>
+              </div>
+            )}
 
             {/* Symbol */}
             <div className="mb-4">
@@ -412,7 +535,7 @@ function ExecuteTradeModal({
             {/* Execute Button */}
             <button
               onClick={handleExecute}
-              disabled={executing}
+              disabled={executing || (tradeMode === "live" && connectedBrokers.length === 0)}
               className={`w-full py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
                 side === "LONG"
                   ? "bg-emerald-500 hover:bg-emerald-400 text-black disabled:opacity-50"
@@ -436,6 +559,15 @@ function ExecuteTradeModal({
         ) : (
           // Trade confirmation view
           <div className="p-6">
+            {/* Mode Badge */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-4 ${
+              result.mode === "live"
+                ? "bg-green-500/20 text-green-400 border border-green-500/50"
+                : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/50"
+            }`} style={{ fontFamily: "JetBrains Mono, monospace" }}>
+              {result.mode === "live" ? "\u25CF LIVE TRADE" : "\u25D0 PAPER TRADE"}
+            </div>
+
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
@@ -443,10 +575,10 @@ function ExecuteTradeModal({
                 </div>
                 <div>
                   <h2 className="text-base font-bold text-white" style={{ fontFamily: "Outfit, sans-serif" }}>
-                    Order Filled ✓
+                    Order Filled
                   </h2>
                   <p className="text-[11px] text-emerald-400/70 tracking-wider" style={{ fontFamily: "JetBrains Mono, monospace" }}>
-                    {result.orderId}
+                    {result.mode === "paper" ? <span className="text-yellow-400/70">SIM-</span> : ""}{result.orderId}
                   </p>
                 </div>
               </div>
@@ -473,7 +605,7 @@ function ExecuteTradeModal({
               {[
                 { label: "Symbol", value: result.symbol },
                 { label: "Side", value: result.side, color: result.side === "LONG" ? "text-emerald-400" : "text-red-400" },
-                { label: "Price", value: result.executionPrice?.toFixed(4) },
+                { label: result.mode === "paper" ? "Price (Sim)" : "Fill Price", value: result.executionPrice?.toFixed(4) },
                 { label: "Quantity", value: result.quantity?.toString() },
                 { label: "Stop Loss", value: result.stopLoss?.toFixed(4), color: "text-red-400" },
                 { label: "Take Profit", value: result.takeProfit?.toFixed(4), color: "text-emerald-400" },
@@ -582,13 +714,14 @@ export default function TradingDashboard() {
       const stored: ActivityEntry[] = JSON.parse(
         localStorage.getItem("aifred_local_trades") || "[]"
       );
+      const tradeMode = result.mode || "paper";
       const newEntry: ActivityEntry = {
         id: `local_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         timestamp: new Date().toISOString(),
         type: "trade_executed",
         severity: "success",
         title: `${result.side} ${result.symbol} — Order Filled`,
-        message: `${result.side} ${result.quantity} ${result.symbol} @ ${result.executionPrice?.toFixed(4)} | Strategy: ${result.strategy} | Confidence: ${result.confidence}%`,
+        message: `[${tradeMode === "live" ? "LIVE" : "PAPER"}] ${result.side} ${result.quantity} ${result.symbol} @ ${result.executionPrice?.toFixed(4)} | Strategy: ${result.strategy} | Confidence: ${result.confidence}%`,
         details: {
           asset: result.symbol,
           side: result.side as "LONG" | "SHORT",
@@ -603,6 +736,7 @@ export default function TradingDashboard() {
           risk_assessment: result.riskAssessment,
           broker: result.broker,
           tier: result.tier,
+          mode: tradeMode,
         },
       };
       stored.unshift(newEntry);
@@ -715,12 +849,22 @@ export default function TradingDashboard() {
                   AIFred
                 </h1>
                 <div className="flex items-center gap-2">
-                  <span
-                    className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-400 tracking-wider font-medium"
-                    style={{ fontFamily: "JetBrains Mono, monospace" }}
-                  >
-                    PAPER MODE
-                  </span>
+                  {(() => {
+                    const brokers = getConnectedBrokers();
+                    const hasLive = brokers.length > 0;
+                    return (
+                      <span
+                        className={`text-[9px] px-2 py-0.5 rounded-full tracking-wider font-medium ${
+                          hasLive
+                            ? "bg-green-500/15 border border-green-500/25 text-green-400"
+                            : "bg-amber-500/15 border border-amber-500/25 text-amber-400"
+                        }`}
+                        style={{ fontFamily: "JetBrains Mono, monospace" }}
+                      >
+                        {hasLive ? "LIVE READY" : "PAPER MODE"}
+                      </span>
+                    );
+                  })()}
                   <div
                     className="w-2 h-2 rounded-full bg-emerald-400"
                     style={{ animation: "pulse-glow 2s ease-in-out infinite" }}
@@ -796,6 +940,13 @@ export default function TradingDashboard() {
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                  tradeToast.mode === "live"
+                    ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                    : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40"
+                }`} style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                  {tradeToast.mode === "live" ? "LIVE" : "PAPER"}
+                </span>
                 <span className="text-sm font-semibold text-white" style={{ fontFamily: "Outfit, sans-serif" }}>
                   {tradeToast.side} {tradeToast.symbol} — Filled
                 </span>
@@ -1558,29 +1709,42 @@ function OverviewTab({
             LIVE
           </span>
           <div className="flex items-center gap-4 overflow-x-auto">
-            {recentActivity.map((entry) => (
-              <div
-                key={entry.id}
-                className="flex items-center gap-2 flex-shrink-0"
-              >
+            {recentActivity.map((entry) => {
+              const isTrade = entry.type === "trade_executed" || entry.type === "trade_closed";
+              const entryMode = isTrade ? getEntryMode(entry) : null;
+              return (
                 <div
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    SEVERITY_DOT[entry.severity] || "bg-zinc-500"
-                  }`}
-                />
-                <span className="text-[11px] text-zinc-400 whitespace-nowrap">
-                  {entry.message.length > 40
-                    ? entry.message.slice(0, 40) + "..."
-                    : entry.message}
-                </span>
-                <span
-                  className="text-[10px] text-zinc-600 whitespace-nowrap"
-                  style={{ fontFamily: "JetBrains Mono, monospace" }}
+                  key={entry.id}
+                  className="flex items-center gap-2 flex-shrink-0"
                 >
-                  {timeAgo(entry.timestamp)}
-                </span>
-              </div>
-            ))}
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                      SEVERITY_DOT[entry.severity] || "bg-zinc-500"
+                    }`}
+                  />
+                  {isTrade && entryMode && (
+                    <span className={`text-[8px] px-1 py-0.5 rounded font-bold flex-shrink-0 ${
+                      entryMode === "live"
+                        ? "bg-green-500/15 text-green-400"
+                        : "bg-yellow-500/15 text-yellow-400"
+                    }`} style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                      {entryMode === "live" ? "LIVE" : "SIM"}
+                    </span>
+                  )}
+                  <span className="text-[11px] text-zinc-400 whitespace-nowrap">
+                    {entry.message.length > 40
+                      ? entry.message.slice(0, 40) + "..."
+                      : entry.message}
+                  </span>
+                  <span
+                    className="text-[10px] text-zinc-600 whitespace-nowrap"
+                    style={{ fontFamily: "JetBrains Mono, monospace" }}
+                  >
+                    {timeAgo(entry.timestamp)}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
       )}
@@ -1945,6 +2109,9 @@ function TradesTab({
         <h3 className="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
           <Activity className="w-4 h-4 text-zinc-500" />
           Recent Trades
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30" style={{ fontFamily: "JetBrains Mono, monospace" }}>
+            PAPER / BACKTEST
+          </span>
           <span className="ml-auto text-xs text-zinc-500">
             Last {trades.filter((t) => t.pnl !== null).length} closed
           </span>
@@ -2040,6 +2207,7 @@ function ActivityTab() {
   const [activities, setActivities] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [filterMode, setFilterMode] = useState<"all" | "live" | "paper">("all");
 
   const mergeWithLocal = (serverList: ActivityEntry[]): ActivityEntry[] => {
     try {
@@ -2128,13 +2296,38 @@ function ActivityTab() {
     >
       {/* ─── Your Executed Trades (always visible) ─────────── */}
       <div className="card-glass rounded-2xl p-5" style={{ borderColor: userTrades.length > 0 ? "rgba(16,185,129,0.15)" : undefined }}>
-        <h3 className="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-zinc-300 mb-3 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           Your Executed Trades
           <span className="text-[11px] text-emerald-400/70 font-normal">
             {userTrades.length} trades
           </span>
         </h3>
+
+        {/* Mode Filter */}
+        {userTrades.length > 0 && (
+          <div className="flex gap-2 mb-4">
+            {(["all", "live", "paper"] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setFilterMode(m)}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold tracking-wider uppercase transition-all ${
+                  filterMode === m
+                    ? m === "live"
+                      ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                      : m === "paper"
+                      ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40"
+                      : "bg-white/[0.08] text-white border border-white/[0.12]"
+                    : "text-zinc-500 hover:text-zinc-300 border border-transparent"
+                }`}
+                style={{ fontFamily: "JetBrains Mono, monospace" }}
+              >
+                {m === "all" ? "All" : m === "live" ? "Live Trades" : "Paper Trades"}
+              </button>
+            ))}
+          </div>
+        )}
+
         {userTrades.length === 0 ? (
           <div className="text-center py-8">
             <ArrowUpDown className="w-8 h-8 text-zinc-700 mx-auto mb-3" />
@@ -2145,14 +2338,21 @@ function ActivityTab() {
           </div>
         ) : (
           <div className="space-y-2 max-h-[40vh] overflow-y-auto pr-1">
-            {userTrades.map((trade) => {
+            {userTrades
+              .filter((trade) => {
+                if (filterMode === "all") return true;
+                return getEntryMode(trade) === filterMode;
+              })
+              .map((trade) => {
               const isExpanded = expandedId === trade.id;
+              const entryMode = getEntryMode(trade);
+              const borderColor = entryMode === "live" ? "border-l-green-500" : "border-l-yellow-500";
               return (
                 <motion.div
                   key={trade.id}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-xl border border-emerald-500/10 bg-emerald-500/[0.03] overflow-hidden"
+                  className={`rounded-xl border border-emerald-500/10 bg-emerald-500/[0.03] overflow-hidden border-l-[3px] ${borderColor}`}
                 >
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : trade.id)}
@@ -2161,6 +2361,13 @@ function ActivityTab() {
                     <TrendingUp className={`w-4 h-4 flex-shrink-0 ${trade.details?.side === "SHORT" ? "text-red-400" : "text-emerald-400"}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                          entryMode === "live"
+                            ? "bg-green-500/15 text-green-400 border border-green-500/30"
+                            : "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30"
+                        }`} style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                          {entryMode === "live" ? "LIVE" : "PAPER"}
+                        </span>
                         <span className="text-xs font-semibold text-white">{trade.title}</span>
                         {trade.details?.tier && (
                           <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
@@ -2294,6 +2501,11 @@ function ActivityTab() {
                     : "text-red-400"
                   : config.color;
               const isExpanded = expandedId === entry.id;
+              const isTrade = entry.type === "trade_executed" || entry.type === "trade_closed";
+              const entryMode = isTrade ? getEntryMode(entry) : null;
+              const tradeBorderClass = isTrade
+                ? entryMode === "live" ? "border-l-[3px] border-l-green-500" : "border-l-[3px] border-l-yellow-500"
+                : "";
 
               return (
                 <motion.div
@@ -2301,6 +2513,7 @@ function ActivityTab() {
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.03 }}
+                  className={tradeBorderClass ? `rounded-lg ${tradeBorderClass}` : ""}
                 >
                   <button
                     onClick={() =>
@@ -2318,6 +2531,15 @@ function ActivityTab() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
+                        {isTrade && entryMode && (
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold ${
+                            entryMode === "live"
+                              ? "bg-green-500/15 text-green-400 border border-green-500/30"
+                              : "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30"
+                          }`} style={{ fontFamily: "JetBrains Mono, monospace" }}>
+                            {entryMode === "live" ? "LIVE" : "PAPER"}
+                          </span>
+                        )}
                         <span className="text-xs font-semibold text-zinc-200">
                           {entry.title}
                         </span>
