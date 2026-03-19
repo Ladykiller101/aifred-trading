@@ -290,12 +290,10 @@ function ExecuteTradeModal({
   const [selectedBroker, setSelectedBroker] = useState<string>("");
   const [connectedBrokers, setConnectedBrokers] = useState<ConnectedBrokerInfo[]>(() => getConnectedBrokers());
 
-  // Refresh connected brokers every time the modal opens
+  // Refresh connected brokers on mount (modal is conditionally rendered, so mount = open)
   useEffect(() => {
-    if (isOpen) {
-      setConnectedBrokers(getConnectedBrokers());
-    }
-  }, [isOpen]);
+    setConnectedBrokers(getConnectedBrokers());
+  }, []);
 
   // Auto-close 8 seconds after result appears
   useEffect(() => {
