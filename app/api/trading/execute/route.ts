@@ -222,13 +222,20 @@ async function executeLiveTrade(
     throw new Error(`ccxt does not have exchange "${exchangeId}"`);
   }
 
-  // 3. Prepare credentials — fix PEM newlines for CDP EC private keys
+  // 3. Prepare credentials — normalize PEM format for CDP EC private keys
   let apiSecret = creds.api_secret || creds.secret || "";
-  if (apiSecret.includes("BEGIN EC PRIVATE KEY") && !apiSecret.includes("\n")) {
-    // Newlines were stripped by the single-line input — restore PEM format
-    apiSecret = apiSecret
-      .replace("-----BEGIN EC PRIVATE KEY-----", "-----BEGIN EC PRIVATE KEY-----\n")
-      .replace("-----END EC PRIVATE KEY-----", "\n-----END EC PRIVATE KEY-----\n");
+  if (apiSecret.includes("BEGIN EC PRIVATE KEY")) {
+    // Always normalize PEM: strip all whitespace/newlines from body, rebuild proper format
+    const pemBody = apiSecret
+      .replace(/-----BEGIN EC PRIVATE KEY-----/g, "")
+      .replace(/-----END EC PRIVATE KEY-----/g, "")
+      .replace(/[\s\r\n]+/g, "");
+    // Rebuild PEM with proper 64-char line wrapping
+    const lines: string[] = [];
+    for (let i = 0; i < pemBody.length; i += 64) {
+      lines.push(pemBody.slice(i, i + 64));
+    }
+    apiSecret = `-----BEGIN EC PRIVATE KEY-----\n${lines.join("\n")}\n-----END EC PRIVATE KEY-----\n`;
   }
 
   // 4. Create exchange instance

@@ -48,12 +48,27 @@ export async function POST(request: NextRequest) {
 
       try {
         const ExchangeClass = ccxt[exchangeName];
+
+        // Normalize PEM format for CDP EC private keys
+        let secret = credentials.api_secret || credentials.secret || "";
+        if (secret.includes("BEGIN EC PRIVATE KEY")) {
+          const pemBody = secret
+            .replace(/-----BEGIN EC PRIVATE KEY-----/g, "")
+            .replace(/-----END EC PRIVATE KEY-----/g, "")
+            .replace(/[\s\r\n]+/g, "");
+          const lines: string[] = [];
+          for (let i = 0; i < pemBody.length; i += 64) {
+            lines.push(pemBody.slice(i, i + 64));
+          }
+          secret = `-----BEGIN EC PRIVATE KEY-----\n${lines.join("\n")}\n-----END EC PRIVATE KEY-----\n`;
+        }
+
         const exchange = new ExchangeClass({
           apiKey: credentials.api_key || credentials.apiKey,
-          secret: credentials.api_secret || credentials.secret,
-          password: credentials.passphrase || credentials.password, // Coinbase Pro needs this
+          secret: secret,
+          password: credentials.passphrase || credentials.password,
           enableRateLimit: true,
-          timeout: 10000,
+          timeout: 15000,
         });
 
         const balance = await exchange.fetchBalance();

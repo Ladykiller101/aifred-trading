@@ -278,12 +278,27 @@ async function revalidateBroker(
 
     if (ccxt && exchangeName && ccxt[exchangeName]) {
       const ExchangeClass = ccxt[exchangeName];
+
+      // Normalize PEM for CDP keys
+      let secret = creds.api_secret || creds.secret || "";
+      if (secret.includes("BEGIN EC PRIVATE KEY")) {
+        const pemBody = secret
+          .replace(/-----BEGIN EC PRIVATE KEY-----/g, "")
+          .replace(/-----END EC PRIVATE KEY-----/g, "")
+          .replace(/[\s\r\n]+/g, "");
+        const lines: string[] = [];
+        for (let i = 0; i < pemBody.length; i += 64) {
+          lines.push(pemBody.slice(i, i + 64));
+        }
+        secret = `-----BEGIN EC PRIVATE KEY-----\n${lines.join("\n")}\n-----END EC PRIVATE KEY-----\n`;
+      }
+
       const exchange = new ExchangeClass({
         apiKey: creds.api_key || creds.apiKey,
-        secret: creds.api_secret || creds.secret,
+        secret: secret,
         password: creds.passphrase || creds.password,
         enableRateLimit: true,
-        timeout: 10000,
+        timeout: 15000,
       });
       await exchange.fetchBalance();
       return true;
