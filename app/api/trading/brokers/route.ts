@@ -49,7 +49,7 @@ function appendActivity(entry: {
 interface CredentialField {
   key: string;
   label: string;
-  type: "text" | "password";
+  type: "text" | "password" | "textarea";
   optional?: boolean;
 }
 
@@ -89,7 +89,7 @@ const BROKER_REGISTRY: BrokerDefinition[] = [
     ],
     requiredCredentials: [
       { key: "api_key", label: "API Key Name", type: "text" },
-      { key: "api_secret", label: "API Secret", type: "password" },
+      { key: "api_secret", label: "API Secret (PEM Private Key)", type: "textarea" },
     ],
   },
   {

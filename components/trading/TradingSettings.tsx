@@ -91,7 +91,7 @@ const DEFAULT_BROKERS: Broker[] = [
     status: "disconnected",
     requiredCredentials: [
       { key: "api_key", label: "API Key Name", type: "text" },
-      { key: "api_secret", label: "API Secret", type: "password" },
+      { key: "api_secret", label: "API Secret (PEM Private Key)", type: "textarea" },
     ],
   },
   {
@@ -1443,19 +1443,35 @@ function ConnectionModal({
               >
                 {field.label}
               </label>
-              <input
-                type={field.type}
-                value={credentials[field.key] || ""}
-                onChange={(e) =>
-                  setCredentials({
-                    ...credentials,
-                    [field.key]: e.target.value,
-                  })
-                }
-                className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/30 transition-colors placeholder:text-zinc-700"
-                style={{ fontFamily: "JetBrains Mono, monospace" }}
-                placeholder={`Enter ${field.label.toLowerCase()}`}
-              />
+              {field.type === "textarea" ? (
+                <textarea
+                  value={credentials[field.key] || ""}
+                  onChange={(e) =>
+                    setCredentials({
+                      ...credentials,
+                      [field.key]: e.target.value,
+                    })
+                  }
+                  rows={4}
+                  className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/30 transition-colors placeholder:text-zinc-700 resize-y"
+                  style={{ fontFamily: "JetBrains Mono, monospace" }}
+                  placeholder="Paste your PEM private key here (-----BEGIN EC PRIVATE KEY-----...)"
+                />
+              ) : (
+                <input
+                  type={field.type}
+                  value={credentials[field.key] || ""}
+                  onChange={(e) =>
+                    setCredentials({
+                      ...credentials,
+                      [field.key]: e.target.value,
+                    })
+                  }
+                  className="w-full bg-white/[0.03] border border-white/[0.06] rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none focus:border-emerald-500/30 transition-colors placeholder:text-zinc-700"
+                  style={{ fontFamily: "JetBrains Mono, monospace" }}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                />
+              )}
             </div>
           ))}
         </div>

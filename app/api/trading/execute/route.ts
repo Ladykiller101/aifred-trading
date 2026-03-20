@@ -222,29 +222,49 @@ async function executeLiveTrade(
     throw new Error(`ccxt does not have exchange "${exchangeId}"`);
   }
 
-  // 3. Create exchange instance
+  // 3. Prepare credentials — fix PEM newlines for CDP EC private keys
+  let apiSecret = creds.api_secret || creds.secret || "";
+  if (apiSecret.includes("BEGIN EC PRIVATE KEY") && !apiSecret.includes("\n")) {
+    // Newlines were stripped by the single-line input — restore PEM format
+    apiSecret = apiSecret
+      .replace("-----BEGIN EC PRIVATE KEY-----", "-----BEGIN EC PRIVATE KEY-----\n")
+      .replace("-----END EC PRIVATE KEY-----", "\n-----END EC PRIVATE KEY-----\n");
+  }
+
+  // 4. Create exchange instance
   const exchange = new ExchangeClass({
     apiKey: creds.api_key || creds.apiKey,
-    secret: creds.api_secret || creds.secret,
+    secret: apiSecret,
     password: creds.passphrase || creds.password,
     enableRateLimit: true,
-    timeout: 15000,
-    // Coinbase requires price for market buy orders — disable this requirement
-    // and pass quantity as the amount of base currency to buy
-    options: {
-      createMarketBuyOrderRequiresPrice: false,
-    },
+    timeout: 30000,
   });
 
-  // 4. Place order
+  // 5. Load markets and resolve portfolio for Coinbase Advanced Trade
+  await exchange.loadMarkets();
+
+  let orderParams: Record<string, unknown> = {};
+  if (exchangeId === "coinbase") {
+    try {
+      const portfolios = await exchange.fetchPortfolios();
+      if (portfolios && portfolios.length > 0) {
+        orderParams.retail_portfolio_id = portfolios[0].id;
+      }
+    } catch (e) {
+      // Portfolio fetch failed — proceed without it, may still work
+      console.warn("Could not fetch Coinbase portfolios:", e);
+    }
+  }
+
+  // 6. Place order
   let order: Order;
   const normalizedSymbol = normalizeSymbol(symbol);
 
   try {
     if (orderType === "market") {
-      if (side === "buy" && (exchangeId === "coinbase" || exchangeId === "coinbasepro")) {
-        // Coinbase market buys: pass cost in quote currency (e.g., $10 worth of BTC)
-        // Fetch current price to calculate cost
+      if (side === "buy" && exchangeId === "coinbase") {
+        // Coinbase market buys require quote currency amount (USD cost)
+        // Fetch current price to calculate how much USD to spend
         let price = limitPrice;
         if (!price) {
           try {
@@ -255,20 +275,27 @@ async function executeLiveTrade(
           }
         }
         if (price && price > 0) {
-          const cost = quantity * price;
-          order = await exchange.createOrder(normalizedSymbol, "market", side, cost);
+          // Pass quantity as base amount with price so ccxt calculates cost
+          order = await exchange.createOrder(
+            normalizedSymbol, "market", side, quantity, price, orderParams,
+          );
         } else {
-          // Fallback: set createMarketBuyOrderRequiresPrice to false already set
-          order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+          order = await exchange.createOrder(
+            normalizedSymbol, "market", side, quantity, undefined, orderParams,
+          );
         }
       } else {
-        order = await exchange.createOrder(normalizedSymbol, "market", side, quantity);
+        order = await exchange.createOrder(
+          normalizedSymbol, "market", side, quantity, undefined, orderParams,
+        );
       }
     } else {
       if (!limitPrice) {
         throw new Error("Limit price is required for limit orders");
       }
-      order = await exchange.createOrder(normalizedSymbol, "limit", side, quantity, limitPrice);
+      order = await exchange.createOrder(
+        normalizedSymbol, "limit", side, quantity, limitPrice, orderParams,
+      );
     }
   } catch (err: unknown) {
     // Re-throw with more context for specific ccxt error types
