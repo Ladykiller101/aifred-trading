@@ -31,6 +31,7 @@ import { useRouter } from "next/navigation";
 import {
   saveCredentials as saveCredsToLocal,
   loadAllCredentials,
+  loadCredentials,
   removeCredentials as removeCredsFromLocal,
   isConnected as isLocalConnected,
 } from "@/lib/credential-store";
@@ -555,18 +556,42 @@ export default function TradingSettings() {
     } catch { /* ignore */ }
   }, [autonomousEnabled, riskLimits]);
 
-  // ─── Autonomous Trading: Manual scan handler ──────────────
-  const handleManualScan = useCallback(async () => {
+  // ─── Autonomous Trading: Scan handler (paper or live) ─────
+  const runScan = useCallback(async (autoExec: boolean) => {
     setScanning(true);
     try {
+      const isLive = controls.mode === 'live';
+
+      // For live mode, find the first connected broker and load credentials
+      let brokerId: string | undefined;
+      let brokerCreds: Record<string, string> | undefined;
+      if (isLive && autoExec) {
+        const connBrokers = brokers.filter(b => b.status === 'connected');
+        if (connBrokers.length > 0) {
+          brokerId = connBrokers[0].id;
+          const creds = loadCredentials(connBrokers[0].id);
+          if (creds) brokerCreds = creds;
+        }
+      }
+
+      // Build assets list from enabled controls
+      const enabledAssets = controls.assets
+        .filter(a => a.enabled)
+        .map(a => a.symbol);
+      const assets = enabledAssets.length > 0
+        ? enabledAssets
+        : ['BTC/USDT', 'ETH/USDT', 'SOL/USDT'];
+
       const res = await fetch('/api/trading/autoscan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          assets: ['BTC/USDT', 'ETH/USDT', 'SOL/USDT'],
-          mode: 'paper',
-          autoExecute: false,
+          assets,
+          mode: isLive ? 'live' : 'paper',
+          autoExecute: autoExec,
           riskLimits,
+          ...(brokerId ? { brokerId } : {}),
+          ...(brokerCreds ? { credentials: brokerCreds } : {}),
         }),
       });
       const data = await res.json();
@@ -576,7 +601,24 @@ export default function TradingSettings() {
     } finally {
       setScanning(false);
     }
-  }, [riskLimits]);
+  }, [riskLimits, controls.mode, controls.assets, brokers]);
+
+  const handleManualScan = useCallback(() => runScan(false), [runScan]);
+
+  // ─── Autonomous Trading: Auto-scan interval loop ──────────
+  useEffect(() => {
+    if (!autonomousEnabled) return;
+
+    // Run an initial scan immediately when enabled
+    runScan(true);
+
+    // Then scan every 5 minutes
+    const interval = setInterval(() => {
+      runScan(true);
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [autonomousEnabled, runScan]);
 
   const groupedAssets = controls.assets.reduce(
     (acc, asset) => {
@@ -901,30 +943,67 @@ export default function TradingSettings() {
             </h3>
 
             {/* Status Banner */}
-            <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-700 mb-4">
+            <div className={`p-4 rounded-lg border mb-4 ${
+              autonomousEnabled && controls.mode === 'live'
+                ? 'bg-red-900/20 border-red-500/40'
+                : autonomousEnabled
+                ? 'bg-green-900/20 border-green-500/40'
+                : 'bg-zinc-900/50 border-zinc-700'
+            }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-white flex items-center gap-2">
                     {autonomousEnabled ? 'AI Trader Active' : 'AI Trader Inactive'}
+                    {autonomousEnabled && (
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono tracking-wider ${
+                        controls.mode === 'live'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      }`}>
+                        {controls.mode === 'live' ? 'LIVE' : 'PAPER'}
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs text-zinc-400 mt-1">
                     {autonomousEnabled
-                      ? 'Scanning markets every 30 minutes via GitHub Actions'
-                      : 'Enable to let AIFred trade autonomously 24/7'}
+                      ? controls.mode === 'live'
+                        ? 'REAL trades executing every 5 min on connected broker'
+                        : 'Paper trades executing every 5 min (switch to Live above to use real funds)'
+                      : 'Enable to let AIFred trade autonomously'}
                   </p>
                 </div>
                 <button
-                  onClick={() => setAutonomousEnabled(!autonomousEnabled)}
+                  onClick={() => {
+                    if (!autonomousEnabled && controls.mode === 'live') {
+                      // Confirm before enabling live autonomous trading
+                      if (!confirm('WARNING: You are about to enable AUTONOMOUS LIVE TRADING. Real orders will be placed automatically on your connected broker every 5 minutes. Continue?')) {
+                        return;
+                      }
+                    }
+                    setAutonomousEnabled(!autonomousEnabled);
+                  }}
                   className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                     autonomousEnabled
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/50'
+                      ? controls.mode === 'live'
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/50'
+                        : 'bg-green-500/20 text-green-400 border border-green-500/50'
                       : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                   }`}
                 >
-                  {autonomousEnabled ? 'ACTIVE' : 'ACTIVATE'}
+                  {autonomousEnabled ? 'STOP' : 'ACTIVATE'}
                 </button>
               </div>
             </div>
+
+            {/* Live mode warning */}
+            {autonomousEnabled && controls.mode === 'live' && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                <p className="text-[11px] text-red-300/90">
+                  LIVE MODE ACTIVE — Real orders are being placed automatically. Monitor positions closely.
+                </p>
+              </div>
+            )}
 
             {/* Risk Limits */}
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -968,15 +1047,28 @@ export default function TradingSettings() {
               </div>
             </div>
 
-            {/* Manual Scan Button */}
-            <button
-              onClick={handleManualScan}
-              disabled={scanning}
-              className="w-full py-3 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/50
-                hover:bg-purple-500/30 transition-all text-sm font-semibold disabled:opacity-50"
-            >
-              {scanning ? 'Scanning...' : 'Run Manual Scan Now'}
-            </button>
+            {/* Scan Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleManualScan}
+                disabled={scanning}
+                className="flex-1 py-3 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/50
+                  hover:bg-purple-500/30 transition-all text-sm font-semibold disabled:opacity-50"
+              >
+                {scanning ? 'Scanning...' : 'Scan Only (No Execute)'}
+              </button>
+              <button
+                onClick={() => runScan(true)}
+                disabled={scanning}
+                className={`flex-1 py-3 rounded-lg text-sm font-semibold disabled:opacity-50 transition-all ${
+                  controls.mode === 'live'
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/30'
+                }`}
+              >
+                {scanning ? 'Executing...' : `Scan & Execute (${controls.mode === 'live' ? 'LIVE' : 'Paper'})`}
+              </button>
+            </div>
 
             {/* Last Scan Results */}
             {lastScanResult && (

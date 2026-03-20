@@ -143,10 +143,8 @@ export async function POST(request: NextRequest) {
         } else {
           state.mode = state.mode === "paper" ? "live" : "paper";
         }
-        // Automatically stop when switching to live for safety
-        if (state.mode === "live") {
-          state.running = false;
-        }
+        // Note: no longer auto-stopping on live mode switch.
+        // The frontend handles safety confirmation before enabling live autonomous trading.
         break;
 
       default:
